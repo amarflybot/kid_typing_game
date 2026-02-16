@@ -156,46 +156,14 @@
       30% { transform: translateX(-50%) scale(1.2) translateY(-10px); }
       100% { transform: translateX(-50%) scale(1); }
     }
-    .mario-body {
-      width: 40px;
-      height: 38px;
-      background: linear-gradient(145deg, #e74c3c, #c0392b);
+    .mario-avatar {
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
-      position: relative;
-      border: 3px solid #922b21;
-      box-shadow: inset 0 -3px 6px rgba(0,0,0,0.2);
-    }
-    .mario-head {
-      width: 32px;
-      height: 28px;
-      background: linear-gradient(145deg, #ffeaa7, #fdcb6e);
-      border-radius: 50%;
-      position: absolute;
-      top: -24px;
-      left: 4px;
-      border: 3px solid #e6b422;
-      box-shadow: inset 0 -2px 4px rgba(0,0,0,0.1);
-    }
-    .mario-cap {
-      width: 36px;
-      height: 16px;
-      background: linear-gradient(145deg, #e74c3c, #c0392b);
-      border-radius: 50%;
-      position: absolute;
-      top: -30px;
-      left: 0;
-      border: 3px solid #922b21;
-    }
-    .mario-m {
-      position: absolute;
-      top: -26px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: "Fredoka One", cursive;
-      font-size: 14px;
-      color: white;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-      z-index: 1;
+      object-fit: cover;
+      border: 3px solid #ffeaa7;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: block;
     }
     
     .word-bubble {
@@ -435,10 +403,7 @@
       <span class="flag">🏁</span>
       <div class="ladder" id="ladder"></div>
       <div class="mario" id="mario">
-        <div class="mario-cap"></div>
-        <span class="mario-m">M</span>
-        <div class="mario-head"></div>
-        <div class="mario-body"></div>
+        <img src="kid.jpg" alt="Mario" class="mario-avatar">
       </div>
     </div>
     
