@@ -57,7 +57,8 @@
         0 10px 40px rgba(0,0,0,0.15),
         0 0 0 4px rgba(255,215,0,0.3),
         inset 0 1px 0 rgba(255,255,255,0.8);
-      max-width: 440px;
+      width: 100%;
+      max-width: 960px;
       position: relative;
       z-index: 1;
       animation: cardPop 0.5s ease-out;
@@ -85,9 +86,121 @@
       margin-bottom: 20px;
     }
 
+    .status-bar {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .status-chip {
+      flex: 1 1 120px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 10px 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 6px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .status-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #96a7af;
+      font-weight: 800;
+    }
+    .status-value {
+      font-family: "Fredoka One", cursive;
+      font-size: 1.4rem;
+      color: #ff7043;
+    }
+    .status-chip.coin .status-value {
+      color: #f4a259;
+    }
+    .status-chip.hearts {
+      position: relative;
+      overflow: hidden;
+    }
+    .hearts-row {
+      display: flex;
+      gap: 4px;
+    }
+    .heart {
+      font-size: 1.3rem;
+      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.2));
+    }
+    .status-chip.hearts.hearts-damage {
+      animation: pulseHearts 0.6s ease;
+    }
+    @keyframes pulseHearts {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); background: rgba(255,214,214,0.85); }
+      100% { transform: scale(1); }
+    }
+
+    .mission-card {
+      width: 100%;
+      background: rgba(255, 250, 235, 0.95);
+      border-radius: 18px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 8px 16px rgba(0,0,0,0.08);
+    }
+    .mission-label {
+      margin: 0;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      color: #f4a259;
+      font-weight: 800;
+    }
+    .mission-text {
+      margin: 4px 0 0;
+      font-family: "Fredoka One", cursive;
+      color: #f25c54;
+      font-size: 1.05rem;
+    }
+
+    .game-layout {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+    .game-column {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .game-column.left { order: 1; }
+    .game-column.center { order: 2; }
+    .game-column.right { order: 3; }
+    @media (max-width: 720px) {
+      .game-column.left,
+      .game-column.center,
+      .game-column.right {
+        order: initial;
+      }
+    }
+    .input-stack {
+      background: rgba(255,255,255,0.9);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 8px 18px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .progress-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
     .kid-showcase {
       width: 100%;
-      max-width: 380px;
       display: flex;
       align-items: center;
       gap: 16px;
@@ -95,7 +208,7 @@
       border-radius: 20px;
       background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,245,226,0.95));
       box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-      margin: 0 auto 25px;
+      margin: 0;
       position: relative;
       overflow: hidden;
     }
@@ -151,6 +264,7 @@
       color: #ff7043;
       font-size: 1.1rem;
       line-height: 1.3;
+      text-align: left;
     }
     .kid-quote span {
       display: block;
@@ -159,15 +273,120 @@
       letter-spacing: 0.12em;
       margin-top: 6px;
     }
+
+    .interaction-panel {
+      width: 100%;
+      background: rgba(255,255,255,0.9);
+      border-radius: 18px;
+      padding: 14px 16px 18px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 8px 20px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      flex: 1 1 150px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #ff9a9e, #fad0c4);
+      color: #8c2f39;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 10px 14px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 rgba(255,154,158,0.7);
+      font-family: "Fredoka One", cursive;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .action-btn:nth-child(2) {
+      background: linear-gradient(145deg, #84fab0, #8fd3f4);
+      color: #22577a;
+      box-shadow: 0 5px 0 rgba(132,250,176,0.6);
+    }
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 rgba(0,0,0,0.15);
+    }
+    .action-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+    }
+    .cheer-text {
+      margin: 0;
+      font-family: "Fredoka One", cursive;
+      color: #ff7043;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+    .cheer-text.pop {
+      animation: textPop 0.6s ease;
+    }
+    @keyframes textPop {
+      0% { transform: scale(0.6); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    .sticker-display {
+      min-height: 60px;
+      background: rgba(255, 227, 161, 0.35);
+      border: 2px dashed #ffb347;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      color: #ff914d;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .sticker-display.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .sticker-emoji {
+      font-size: 2rem;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+    }
+    .sticker-label {
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+    }
+    .sparkle-burst {
+      position: absolute;
+      font-size: 1.5rem;
+      pointer-events: none;
+      animation: sparkleBurst 1s ease-out forwards;
+    }
+    @keyframes sparkleBurst {
+      0% { transform: scale(0.4); opacity: 1; }
+      100% { transform: scale(1.5) translateY(-20px); opacity: 0; }
+    }
+    .coin-burst {
+      position: absolute;
+      font-size: 1.3rem;
+      pointer-events: none;
+      animation: coinBurst 0.8s ease-out forwards;
+    }
+    @keyframes coinBurst {
+      0% { transform: translate(-50%, 0) scale(0.5); opacity: 1; }
+      100% { transform: translate(-50%, -30px) scale(1.2); opacity: 0; }
+    }
     
     .game-area {
       width: 100%;
-      max-width: 380px;
-      height: 300px;
+      height: 360px;
       background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
       border-radius: 16px;
       position: relative;
-      margin: 0 auto 20px;
+      margin: 0 auto;
       overflow: hidden;
       border: 4px solid #81c784;
       box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
@@ -175,11 +394,11 @@
     
     .ladder {
       position: absolute;
-      left: 50%;
+      left: 60%;
       transform: translateX(-50%);
-      top: 15px;
-      bottom: 50px;
-      width: 70px;
+      top: 20px;
+      bottom: 40px;
+      width: 100px;
       filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
     }
     .ladder-pole {
@@ -246,7 +465,8 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      margin: 20px auto 10px;
+      margin: 0 auto;
+      width: 100%;
     }
 
     .word-picture {
@@ -303,7 +523,7 @@
       background: white;
       border-radius: 20px;
       padding: 15px 30px;
-      margin: 5px auto 15px;
+      margin: 5px auto;
       display: inline-block;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       border: 4px solid #ffeaa7;
@@ -376,6 +596,10 @@
     .feedback.wrong {
       color: #e74c3c;
       animation: shake 0.4s ease;
+    }
+    .feedback.win-score {
+      color: #f39c12;
+      font-size: 1.05rem;
     }
     @keyframes celebrate {
       0% { transform: scale(1); }
@@ -528,77 +752,114 @@
   <span class="sparkle sparkle-4">⭐</span>
   <span class="sparkle sparkle-5">✨</span>
 
-    <div class="main-card">
-      <h1>🦸 Mario Typing Adventure</h1>
-      <p class="instructions">Type the word below to make Mario climb the ladder! ✨</p>
+  <div class="main-card">
+    <h1>🦸 Mario Typing Adventure</h1>
+    <p class="instructions">Type the word below to make Mario climb the ladder! ✨</p>
+    <div class="status-bar">
+      <div class="status-chip">
+        <span class="status-label">Level</span>
+        <span class="status-value" id="levelDisplay">1</span>
+      </div>
+      <div class="status-chip coin">
+        <span class="status-label">Coins</span>
+        <span class="status-value" id="scoreDisplay">0</span>
+      </div>
+      <div class="status-chip hearts" aria-live="polite">
+        <span class="status-label">Hearts</span>
+        <span class="hearts-row" id="heartsDisplay"></span>
+      </div>
+    </div>
+    <div class="mission-card">
+      <p class="mission-label">Mission</p>
+      <p class="mission-text" id="missionText">Get ready to type!</p>
+    </div>
 
-      <div class="kid-showcase">
-        <div class="kid-photo-frame">
-          <img src="kid.jpg" alt="Excited kid cheering you on" class="kid-photo">
-          <span class="kid-badge">Let's go!</span>
+    <div class="game-layout">
+      <div class="game-column left">
+        <div class="kid-showcase">
+          <div class="kid-photo-frame">
+            <img src="kid.jpg" alt="Excited kid cheering you on" class="kid-photo">
+            <span class="kid-badge">Let's go!</span>
+          </div>
+          <div class="kid-quote">
+            I'm fired up to climb this ladder!
+            <span>Type fast with me 💥</span>
+          </div>
         </div>
-        <div class="kid-quote">
-          I'm fired up to climb this ladder!
-          <span>Type fast with me 💥</span>
+        <div class="interaction-panel">
+          <div class="action-buttons">
+            <button class="action-btn" id="hearButton" type="button">🔊 Hear Word</button>
+            <button class="action-btn" id="cheerButton" type="button">🎉 Kid Cheer</button>
+          </div>
+          <p class="cheer-text" id="cheerText">Tap a button for help or cheer!</p>
+          <div class="sticker-display" id="stickerDisplay" aria-live="polite"></div>
         </div>
       </div>
-    
-      <div class="game-area">
-        <span class="flag">🏁</span>
-        <div class="ladder" id="ladder"></div>
-      <div class="mario" id="mario">
-        <img src="kid.jpg" alt="Mario" class="mario-avatar">
+      <div class="game-column center">
+        <div class="word-card">
+          <div class="word-picture" id="wordPicture" role="img" aria-live="polite"></div>
+          <p class="word-label" id="wordLabel"></p>
+          <div class="word-bubble">
+            <p class="word-display" id="wordDisplay"></p>
+          </div>
+        </div>
+        <div class="input-stack">
+          <div class="input-wrapper">
+            <input type="text" id="wordInput" maxlength="3" placeholder="???">
+          </div>
+          <p class="feedback" id="feedback"></p>
+          <div class="progress-panel">
+            <div class="progress-bar" id="progressBar"></div>
+            <p class="progress-text" id="progressText">Ladder: 0 / 8</p>
+          </div>
+        </div>
+      </div>
+      <div class="game-column right">
+        <div class="game-area">
+          <span class="flag">🏁</span>
+          <div class="ladder" id="ladder"></div>
+          <div class="mario" id="mario">
+            <img src="kid.jpg" alt="Mario" class="mario-avatar">
+          </div>
+        </div>
       </div>
     </div>
-    
-    <div class="word-card">
-      <div class="word-picture" id="wordPicture" role="img" aria-live="polite"></div>
-      <p class="word-label" id="wordLabel"></p>
-      <div class="word-bubble">
-        <p class="word-display" id="wordDisplay"></p>
-      </div>
-    </div>
-    <div class="input-wrapper">
-      <input type="text" id="wordInput" maxlength="3" placeholder="???">
-    </div>
-    <p class="feedback" id="feedback"></p>
-    <div class="progress-bar" id="progressBar"></div>
-    <p class="progress-text" id="progressText">Ladder: 0 / 8</p>
     
     <div class="win-message" id="winMessage">
       <p class="trophy">🏆</p>
       <p class="feedback correct">Mario reached the top! You're a typing champion! 🌟</p>
-      <button class="btn" onclick="restart()">Play Again! 🎮</button>
+      <p class="feedback win-score" id="winScore"></p>
+      <button class="btn" onclick="restart(true)">Next Level! 🚀</button>
     </div>
   </div>
 
   <script>
     const WORD_CARDS = [
-      { word: "cat", emoji: "🐱", label: "Playful Cat", colors: ["#ffd1dc", "#ff9a8b"] },
-      { word: "dog", emoji: "🐶", label: "Happy Dog", colors: ["#d4fc79", "#96e6a1"] },
-      { word: "sun", emoji: "☀️", label: "Sunny Sun", colors: ["#fddb92", "#f8b500"] },
-      { word: "car", emoji: "🚗", label: "Speedy Car", colors: ["#f5576c", "#f093fb"] },
-      { word: "bus", emoji: "🚌", label: "School Bus", colors: ["#fbd786", "#f7797d"] },
-      { word: "bee", emoji: "🐝", label: "Busy Bee", colors: ["#f6d365", "#fda085"] },
-      { word: "fox", emoji: "🦊", label: "Clever Fox", colors: ["#f3904f", "#ff758c"] },
-      { word: "owl", emoji: "🦉", label: "Wise Owl", colors: ["#cbbacc", "#2580b3"] },
-      { word: "pig", emoji: "🐷", label: "Pink Pig", colors: ["#fbc2eb", "#a6c1ee"] },
-      { word: "cow", emoji: "🐮", label: "Gentle Cow", colors: ["#d5d4d0", "#fff1eb"] },
-      { word: "ant", emoji: "🐜", label: "Tiny Ant", colors: ["#c6ffdd", "#fbd786"] },
-      { word: "bug", emoji: "🐞", label: "Lucky Bug", colors: ["#f83600", "#f9d423"] },
-      { word: "bat", emoji: "🦇", label: "Night Bat", colors: ["#cfd9df", "#e2ebf0"] },
-      { word: "hat", emoji: "🎩", label: "Magic Hat", colors: ["#fdfbfb", "#ebedee"] },
-      { word: "map", emoji: "🗺️", label: "Explorer Map", colors: ["#84fab0", "#8fd3f4"] },
-      { word: "jam", emoji: "🍓", label: "Berry Jam", colors: ["#ff9a9e", "#fecfef"] },
-      { word: "run", emoji: "🏃‍♂️", label: "Fast Run", colors: ["#f7ff00", "#db36a4"] },
-      { word: "toy", emoji: "🪀", label: "Fun Toy", colors: ["#c471f5", "#fa71cd"] },
-      { word: "cup", emoji: "☕", label: "Cozy Cup", colors: ["#fbd3e9", "#bb377d"] },
-      { word: "egg", emoji: "🥚", label: "Tiny Egg", colors: ["#e0c3fc", "#8ec5fc"] },
-      { word: "fin", emoji: "🐠", label: "Fish Fin", colors: ["#a1c4fd", "#c2e9fb"] },
-      { word: "log", emoji: "🪵", label: "Forest Log", colors: ["#f5f7fa", "#c3cfe2"] },
-      { word: "rug", emoji: "🧩", label: "Play Rug", colors: ["#ffecd2", "#fcb69f"] },
-      { word: "hug", emoji: "🤗", label: "Warm Hug", colors: ["#fbd786", "#c6ffdd"] },
-      { word: "kid", emoji: "🧒", label: "Bright Kid", colors: ["#ffecd2", "#fcb69f"] }
+      { word: "cat", emoji: "🐱", label: "Playful Cat", colors: ["#ffd1dc", "#ff9a8b"], mission: "Wake up the cuddly kitty word!" },
+      { word: "dog", emoji: "🐶", label: "Happy Dog", colors: ["#d4fc79", "#96e6a1"], mission: "Call the happy puppy word!" },
+      { word: "sun", emoji: "☀️", label: "Sunny Sun", colors: ["#fddb92", "#f8b500"], mission: "Shine the bright sun word!" },
+      { word: "car", emoji: "🚗", label: "Speedy Car", colors: ["#f5576c", "#f093fb"], mission: "Start the speedy car word!" },
+      { word: "bus", emoji: "🚌", label: "School Bus", colors: ["#fbd786", "#f7797d"], mission: "Drive the school bus word!" },
+      { word: "bee", emoji: "🐝", label: "Busy Bee", colors: ["#f6d365", "#fda085"], mission: "Buzz with the busy bee!" },
+      { word: "fox", emoji: "🦊", label: "Clever Fox", colors: ["#f3904f", "#ff758c"], mission: "Sneak with the clever fox!" },
+      { word: "owl", emoji: "🦉", label: "Wise Owl", colors: ["#cbbacc", "#2580b3"], mission: "Hoot with the wise owl word!" },
+      { word: "pig", emoji: "🐷", label: "Pink Pig", colors: ["#fbc2eb", "#a6c1ee"], mission: "Oink with the pink pig word!" },
+      { word: "cow", emoji: "🐮", label: "Gentle Cow", colors: ["#d5d4d0", "#fff1eb"], mission: "Moo with the gentle cow word!" },
+      { word: "ant", emoji: "🐜", label: "Tiny Ant", colors: ["#c6ffdd", "#fbd786"], mission: "March with the tiny ant word!" },
+      { word: "bug", emoji: "🐞", label: "Lucky Bug", colors: ["#f83600", "#f9d423"], mission: "Spot the lucky bug word!" },
+      { word: "bat", emoji: "🦇", label: "Night Bat", colors: ["#cfd9df", "#e2ebf0"], mission: "Flip with the night bat word!" },
+      { word: "hat", emoji: "🎩", label: "Magic Hat", colors: ["#fdfbfb", "#ebedee"], mission: "Pop on the magic hat word!" },
+      { word: "map", emoji: "🗺️", label: "Explorer Map", colors: ["#84fab0", "#8fd3f4"], mission: "Find the explorer map word!" },
+      { word: "jam", emoji: "🍓", label: "Berry Jam", colors: ["#ff9a9e", "#fecfef"], mission: "Spread the berry jam word!" },
+      { word: "run", emoji: "🏃‍♂️", label: "Fast Run", colors: ["#f7ff00", "#db36a4"], mission: "Dash with the fast run word!" },
+      { word: "toy", emoji: "🪀", label: "Fun Toy", colors: ["#c471f5", "#fa71cd"], mission: "Play with the fun toy word!" },
+      { word: "cup", emoji: "☕", label: "Cozy Cup", colors: ["#fbd3e9", "#bb377d"], mission: "Sip from the cozy cup word!" },
+      { word: "egg", emoji: "🥚", label: "Tiny Egg", colors: ["#e0c3fc", "#8ec5fc"], mission: "Crack the tiny egg word!" },
+      { word: "fin", emoji: "🐠", label: "Fish Fin", colors: ["#a1c4fd", "#c2e9fb"], mission: "Swish the fish fin word!" },
+      { word: "log", emoji: "🪵", label: "Forest Log", colors: ["#f5f7fa", "#c3cfe2"], mission: "Balance on the forest log word!" },
+      { word: "rug", emoji: "🧩", label: "Play Rug", colors: ["#ffecd2", "#fcb69f"], mission: "Jump on the play rug word!" },
+      { word: "hug", emoji: "🤗", label: "Warm Hug", colors: ["#fbd786", "#c6ffdd"], mission: "Share the warm hug word!" },
+      { word: "kid", emoji: "🧒", label: "Bright Kid", colors: ["#ffecd2", "#fcb69f"], mission: "Spell the bright kid power word!" }
     ];
 
     const WORDS = WORD_CARDS.map(card => card.word);
@@ -607,14 +868,37 @@
       return map;
     }, {});
 
+    const CHEER_MESSAGES = [
+      "Clap clap! Let's do it!",
+      "We got this, superstar!",
+      "Power fingers ready!",
+      "Zoom up the ladder!",
+      "Big smiles, big typing!"
+    ];
+
+    const STICKER_REWARDS = [
+      { emoji: "⭐", label: "Shining Star" },
+      { emoji: "🚀", label: "Rocket Kid" },
+      { emoji: "🌈", label: "Rainbow Hero" },
+      { emoji: "🍭", label: "Sweet Typist" },
+      { emoji: "🛡️", label: "Brave Buddy" },
+      { emoji: "🦋", label: "Flutter Champ" }
+    ];
+
     const LADDER_RUNGS = 8;
-    const RUNG_HEIGHT = 30;
+    const RUNG_HEIGHT = 38;
     const MARIO_BASE_BOTTOM = 45;
+    const MAX_LIVES = 3;
+    const POINTS_PER_WORD = 10;
+    const LEVEL_BONUS = 20;
 
     let currentWord = "";
     let currentRung = 0;
     let wordsUsed = new Set();
     let audioCtx = null;
+    let score = 0;
+    let lives = MAX_LIVES;
+    let level = 1;
 
     function initAudio() {
       if (!audioCtx) {
@@ -701,6 +985,136 @@
       }
     }
 
+    function renderHearts(damage = false) {
+      const heartsEl = document.getElementById("heartsDisplay");
+      if (!heartsEl) return;
+      heartsEl.innerHTML = "";
+      for (let i = 0; i < MAX_LIVES; i++) {
+        const span = document.createElement("span");
+        span.className = "heart";
+        span.textContent = i < lives ? "❤️" : "🤍";
+        heartsEl.appendChild(span);
+      }
+      const chip = document.querySelector(".status-chip.hearts");
+      if (chip) {
+        chip.classList.remove("hearts-damage");
+        if (damage) {
+          void chip.offsetWidth;
+          chip.classList.add("hearts-damage");
+        }
+      }
+    }
+
+    function updateStatusBar(damage = false) {
+      const levelEl = document.getElementById("levelDisplay");
+      const scoreEl = document.getElementById("scoreDisplay");
+      if (levelEl) levelEl.textContent = level;
+      if (scoreEl) scoreEl.textContent = score;
+      renderHearts(damage);
+    }
+
+    function setMission(card) {
+      const missionEl = document.getElementById("missionText");
+      if (!missionEl) return;
+      if (!card) {
+        missionEl.textContent = "Get ready to type!";
+        return;
+      }
+      missionEl.textContent = card.mission || `Type ${card.word.toUpperCase()}!`;
+    }
+
+    function showCoinBurst(target) {
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      const coin = document.createElement("span");
+      coin.className = "coin-burst";
+      coin.textContent = "🪙";
+      coin.style.left = rect.left + rect.width / 2 + "px";
+      coin.style.top = rect.top + window.scrollY - 10 + "px";
+      document.body.appendChild(coin);
+      setTimeout(() => coin.remove(), 800);
+    }
+
+    function addCoins(amount = POINTS_PER_WORD) {
+      score += amount;
+      updateStatusBar();
+      const scoreEl = document.getElementById("scoreDisplay");
+      showCoinBurst(scoreEl);
+    }
+
+    function loseLife() {
+      if (lives > 0) {
+        lives -= 1;
+        updateStatusBar(true);
+      }
+      if (lives === 0) {
+        kidCheer("Bonus hearts unlocked! Keep going!");
+        showStickerReward();
+        setTimeout(() => {
+          lives = MAX_LIVES;
+          updateStatusBar();
+        }, 900);
+      }
+    }
+
+    function speakWord(word) {
+      if (!word) return;
+      const button = document.getElementById("hearButton");
+      if (button) {
+        button.classList.add("keypress");
+        setTimeout(() => button.classList.remove("keypress"), 200);
+      }
+      if (!window.speechSynthesis) {
+        kidCheer("Say it loud with me!");
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.rate = 0.8;
+      utterance.pitch = 1.4;
+      utterance.lang = "en-US";
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+
+    function kidCheer(customMessage) {
+      const cheerEl = document.getElementById("cheerText");
+      if (!cheerEl) return;
+      const message = customMessage || CHEER_MESSAGES[Math.floor(Math.random() * CHEER_MESSAGES.length)];
+      cheerEl.textContent = message;
+      cheerEl.classList.remove("pop");
+      void cheerEl.offsetWidth;
+      cheerEl.classList.add("pop");
+      showSparkleBurst(cheerEl);
+    }
+
+    let stickerTimer = null;
+    function showStickerReward() {
+      const stickerEl = document.getElementById("stickerDisplay");
+      const reward = STICKER_REWARDS[Math.floor(Math.random() * STICKER_REWARDS.length)];
+      stickerEl.innerHTML = `
+        <span class="sticker-emoji">${reward.emoji}</span>
+        <span class="sticker-label">${reward.label}</span>
+      `;
+      stickerEl.classList.add("show");
+      clearTimeout(stickerTimer);
+      stickerTimer = setTimeout(() => stickerEl.classList.remove("show"), 2200);
+    }
+
+    function showSparkleBurst(target) {
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      const sparkle = document.createElement("span");
+      sparkle.className = "sparkle-burst";
+      sparkle.textContent = "✨";
+      sparkle.style.left = rect.left + rect.width / 2 + "px";
+      sparkle.style.top = rect.top - 10 + window.scrollY + "px";
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 1000);
+    }
+
+    document.getElementById("hearButton").addEventListener("click", () => speakWord(currentWord));
+    document.getElementById("cheerButton").addEventListener("click", () => kidCheer());
+
     function renderWordCard(word) {
       const picture = document.getElementById("wordPicture");
       const label = document.getElementById("wordLabel");
@@ -709,6 +1123,7 @@
         picture.innerHTML = "";
         label.textContent = "";
         picture.removeAttribute("aria-label");
+        setMission(null);
         return;
       }
       const [start, end] = card.colors;
@@ -720,6 +1135,7 @@
       `;
       picture.setAttribute("aria-label", card.label);
       label.textContent = card.label;
+      setMission(card);
     }
 
     function newWord() {
@@ -732,6 +1148,7 @@
 
       document.getElementById("wordDisplay").textContent = currentWord.toUpperCase();
       renderWordCard(currentWord);
+      kidCheer("Can you type " + currentWord.toUpperCase() + "?");
       document.getElementById("wordInput").value = "";
       document.getElementById("feedback").textContent = "";
       document.getElementById("feedback").className = "feedback";
@@ -746,6 +1163,7 @@
 
       if (typed === currentWord) {
         playSuccessSound();
+        addCoins();
         if (currentRung >= LADDER_RUNGS - 1) showConfetti();
         currentRung++;
         document.getElementById("progressText").textContent = `Ladder: ${currentRung} / ${LADDER_RUNGS}`;
@@ -754,11 +1172,19 @@
         document.getElementById("feedback").className = "feedback correct";
         drawProgressBar();
         updateMario(true);
+        showStickerReward();
+        kidCheer("Whoa! You nailed " + currentWord.toUpperCase() + "!");
 
         if (currentRung >= LADDER_RUNGS) {
+          score += LEVEL_BONUS;
+          updateStatusBar();
           [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
             setTimeout(() => playTone(freq, 0.2, "sine"), i * 120);
           });
+          const winScore = document.getElementById("winScore");
+          if (winScore) {
+            winScore.textContent = `Level ${level} complete! +${LEVEL_BONUS} coins (Total: ${score})`;
+          }
           document.querySelector(".word-bubble").style.display = "none";
           document.querySelector(".input-wrapper").style.display = "none";
           document.getElementById("feedback").style.display = "none";
@@ -772,6 +1198,7 @@
         playWrongSound();
         document.getElementById("feedback").textContent = "Oops! Try again. 💪";
         document.getElementById("feedback").className = "feedback wrong";
+        loseLife();
         input.value = "";
         input.focus();
       }
@@ -788,10 +1215,20 @@
       }
     });
 
-    function restart() {
+    function restart(nextLevel = false) {
       currentRung = 0;
       wordsUsed.clear();
-      document.getElementById("progressText").textContent = "Ladder: 0 / 8";
+      lives = MAX_LIVES;
+      if (nextLevel) {
+        level += 1;
+      } else {
+        level = 1;
+        score = 0;
+      }
+      updateStatusBar();
+      const winScore = document.getElementById("winScore");
+      if (winScore) winScore.textContent = "";
+      document.getElementById("progressText").textContent = `Ladder: 0 / ${LADDER_RUNGS}`;
       document.getElementById("progressText").style.color = "#6c757d";
       document.getElementById("progressText").style.display = "block";
       document.querySelector(".word-bubble").style.display = "block";
@@ -799,12 +1236,14 @@
       document.getElementById("feedback").style.display = "block";
       document.getElementById("progressBar").style.display = "flex";
       document.getElementById("winMessage").classList.remove("show");
+      drawProgressBar();
       updateMario();
       newWord();
     }
 
     drawLadder();
     drawProgressBar();
+    updateStatusBar();
     updateMario();
     newWord();
   </script>
