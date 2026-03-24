@@ -888,7 +888,8 @@
     const LADDER_RUNGS = 8;
     const RUNG_HEIGHT = 38;
     const MARIO_BASE_BOTTOM = 45;
-    const MAX_LIVES = 3;
+    const BASE_LIVES = 3;
+    const HEART_CAP = 6;
     const POINTS_PER_WORD = 10;
     const LEVEL_BONUS = 20;
 
@@ -897,7 +898,8 @@
     let wordsUsed = new Set();
     let audioCtx = null;
     let score = 0;
-    let lives = MAX_LIVES;
+    let maxLives = BASE_LIVES;
+    let lives = maxLives;
     let level = 1;
 
     function initAudio() {
@@ -989,7 +991,7 @@
       const heartsEl = document.getElementById("heartsDisplay");
       if (!heartsEl) return;
       heartsEl.innerHTML = "";
-      for (let i = 0; i < MAX_LIVES; i++) {
+      for (let i = 0; i < maxLives; i++) {
         const span = document.createElement("span");
         span.className = "heart";
         span.textContent = i < lives ? "❤️" : "🤍";
@@ -1042,6 +1044,18 @@
       showCoinBurst(scoreEl);
     }
 
+    function unlockBonusHearts() {
+      const targetMax = Math.min(HEART_CAP, BASE_LIVES + Math.floor(currentRung / 2));
+      if (targetMax > maxLives) {
+        const heartsGained = targetMax - maxLives;
+        maxLives = targetMax;
+        lives = Math.min(lives + heartsGained, maxLives);
+        kidCheer("Extra heart unlocked!");
+        showSparkleBurst(document.querySelector(".status-chip.hearts"));
+        updateStatusBar();
+      }
+    }
+
     function loseLife() {
       if (lives > 0) {
         lives -= 1;
@@ -1051,7 +1065,7 @@
         kidCheer("Bonus hearts unlocked! Keep going!");
         showStickerReward();
         setTimeout(() => {
-          lives = MAX_LIVES;
+          lives = maxLives;
           updateStatusBar();
         }, 900);
       }
@@ -1172,6 +1186,7 @@
         document.getElementById("feedback").className = "feedback correct";
         drawProgressBar();
         updateMario(true);
+        unlockBonusHearts();
         showStickerReward();
         kidCheer("Whoa! You nailed " + currentWord.toUpperCase() + "!");
 
@@ -1218,7 +1233,8 @@
     function restart(nextLevel = false) {
       currentRung = 0;
       wordsUsed.clear();
-      lives = MAX_LIVES;
+      maxLives = BASE_LIVES;
+      lives = maxLives;
       if (nextLevel) {
         level += 1;
       } else {
