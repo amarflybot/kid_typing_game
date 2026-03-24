@@ -84,6 +84,81 @@
       font-weight: 600;
       margin-bottom: 20px;
     }
+
+    .kid-showcase {
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,245,226,0.95));
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      margin: 0 auto 25px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kid-showcase::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255, 215, 0, 0.15);
+      top: -50px;
+      right: -30px;
+    }
+    .kid-photo-frame {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      border-radius: 30px;
+      padding: 6px;
+      background: linear-gradient(145deg, #ff9a9e, #fad0c4);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+      transform: rotate(-6deg);
+      animation: bouncePhoto 2.2s ease-in-out infinite;
+    }
+    @keyframes bouncePhoto {
+      0%, 100% { transform: rotate(-6deg) translateY(0); }
+      50% { transform: rotate(-3deg) translateY(-6px); }
+    }
+    .kid-photo {
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      object-fit: cover;
+      border: 4px solid rgba(255,255,255,0.9);
+    }
+    .kid-badge {
+      position: absolute;
+      bottom: -12px;
+      right: -12px;
+      background: linear-gradient(145deg, #ffdd57, #ffac33);
+      color: #b23a48;
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .kid-quote {
+      flex: 1;
+      font-family: "Fredoka One", cursive;
+      color: #ff7043;
+      font-size: 1.1rem;
+      line-height: 1.3;
+    }
+    .kid-quote span {
+      display: block;
+      font-size: 0.85rem;
+      color: #ffab40;
+      letter-spacing: 0.12em;
+      margin-top: 6px;
+    }
     
     .game-area {
       width: 100%;
@@ -166,11 +241,69 @@
       display: block;
     }
     
+    .word-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 20px auto 10px;
+    }
+
+    .word-picture {
+      width: 200px;
+      height: 200px;
+      border-radius: 24px;
+      border: 4px solid #ffd93d;
+      background: linear-gradient(145deg, var(--start-color, #fff4c7), var(--end-color, #ffd93d));
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    .word-picture::before,
+    .word-picture::after {
+      content: "";
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      filter: blur(0.5px);
+      animation: bubblePulse 4s ease-in-out infinite;
+    }
+    .word-picture::before { top: -10px; right: -10px; }
+    .word-picture::after { bottom: -20px; left: -15px; animation-delay: 1s; }
+    .word-picture:hover { transform: translateY(-4px); }
+
+    .word-emoji,
+    .word-emoji-echo {
+      font-size: 5.5rem;
+      line-height: 1;
+      position: absolute;
+    }
+    .word-emoji { z-index: 1; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.2)); }
+    .word-emoji-echo {
+      color: rgba(255,255,255,0.7);
+      transform: translate(8px, 12px) scale(1.05);
+      opacity: 0.4;
+    }
+
+    .word-label {
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #ff8a5c;
+      margin: 0;
+    }
+
     .word-bubble {
       background: white;
       border-radius: 20px;
       padding: 15px 30px;
-      margin: 15px auto;
+      margin: 5px auto 15px;
       display: inline-block;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       border: 4px solid #ffeaa7;
@@ -395,20 +528,35 @@
   <span class="sparkle sparkle-4">⭐</span>
   <span class="sparkle sparkle-5">✨</span>
 
-  <div class="main-card">
-    <h1>🦸 Mario Typing Adventure</h1>
-    <p class="instructions">Type the word below to make Mario climb the ladder! ✨</p>
+    <div class="main-card">
+      <h1>🦸 Mario Typing Adventure</h1>
+      <p class="instructions">Type the word below to make Mario climb the ladder! ✨</p>
+
+      <div class="kid-showcase">
+        <div class="kid-photo-frame">
+          <img src="kid.jpg" alt="Excited kid cheering you on" class="kid-photo">
+          <span class="kid-badge">Let's go!</span>
+        </div>
+        <div class="kid-quote">
+          I'm fired up to climb this ladder!
+          <span>Type fast with me 💥</span>
+        </div>
+      </div>
     
-    <div class="game-area">
-      <span class="flag">🏁</span>
-      <div class="ladder" id="ladder"></div>
+      <div class="game-area">
+        <span class="flag">🏁</span>
+        <div class="ladder" id="ladder"></div>
       <div class="mario" id="mario">
         <img src="kid.jpg" alt="Mario" class="mario-avatar">
       </div>
     </div>
     
-    <div class="word-bubble">
-      <p class="word-display" id="wordDisplay"></p>
+    <div class="word-card">
+      <div class="word-picture" id="wordPicture" role="img" aria-live="polite"></div>
+      <p class="word-label" id="wordLabel"></p>
+      <div class="word-bubble">
+        <p class="word-display" id="wordDisplay"></p>
+      </div>
     </div>
     <div class="input-wrapper">
       <input type="text" id="wordInput" maxlength="3" placeholder="???">
@@ -425,24 +573,39 @@
   </div>
 
   <script>
-    const WORDS = [
-      "cat", "dog", "run", "fun", "sun", "bat", "hat", "mat", "rat", "car",
-      "bug", "mug", "big", "pig", "sit", "hit", "bit", "dot", "pot", "hot",
-      "cup", "top", "hop", "pop", "map", "nap", "cap", "lap", "sad", "mad",
-      "bed", "red", "fed", "wed", "get", "pet", "net", "wet", "let", "met",
-      "mom", "dad", "box", "fox", "mix", "fix", "six", "cub", "tub", "bus",
-      "jam", "ham", "ram", "can", "man", "pan", "van", "ant", "egg", "add",
-      "log", "fog", "jog", "saw", "paw", "law", "raw", "new", "few", "sew",
-      "bin", "fin", "pin", "tin", "win", "sin", "ban", "fan", "ran", "tan",
-      "hen", "men", "pen", "ten", "den", "bun", "nun", "pun", "cot", "lot",
-      "rot", "tot", "gap", "rap", "tap", "zap", "bad", "had", "lad", "pad",
-      "tad", "dam", "yam", "bar", "far", "jar", "tar", "bag", "nag", "rag",
-      "tag", "wag", "bet", "jet", "set", "vet", "dig", "fig", "wig", "bog",
-      "hog", "dug", "hug", "jug", "rug", "tug", "cop", "mop", "hub", "rub",
-      "gum", "hum", "sum", "cab", "dab", "gab", "lab", "tab", "bay", "day",
-      "hay", "jay", "lay", "may", "pay", "ray", "say", "way", "bow", "cow",
-      "how", "low", "now", "row", "boy", "joy", "toy", "pup"
+    const WORD_CARDS = [
+      { word: "cat", emoji: "🐱", label: "Playful Cat", colors: ["#ffd1dc", "#ff9a8b"] },
+      { word: "dog", emoji: "🐶", label: "Happy Dog", colors: ["#d4fc79", "#96e6a1"] },
+      { word: "sun", emoji: "☀️", label: "Sunny Sun", colors: ["#fddb92", "#f8b500"] },
+      { word: "car", emoji: "🚗", label: "Speedy Car", colors: ["#f5576c", "#f093fb"] },
+      { word: "bus", emoji: "🚌", label: "School Bus", colors: ["#fbd786", "#f7797d"] },
+      { word: "bee", emoji: "🐝", label: "Busy Bee", colors: ["#f6d365", "#fda085"] },
+      { word: "fox", emoji: "🦊", label: "Clever Fox", colors: ["#f3904f", "#ff758c"] },
+      { word: "owl", emoji: "🦉", label: "Wise Owl", colors: ["#cbbacc", "#2580b3"] },
+      { word: "pig", emoji: "🐷", label: "Pink Pig", colors: ["#fbc2eb", "#a6c1ee"] },
+      { word: "cow", emoji: "🐮", label: "Gentle Cow", colors: ["#d5d4d0", "#fff1eb"] },
+      { word: "ant", emoji: "🐜", label: "Tiny Ant", colors: ["#c6ffdd", "#fbd786"] },
+      { word: "bug", emoji: "🐞", label: "Lucky Bug", colors: ["#f83600", "#f9d423"] },
+      { word: "bat", emoji: "🦇", label: "Night Bat", colors: ["#cfd9df", "#e2ebf0"] },
+      { word: "hat", emoji: "🎩", label: "Magic Hat", colors: ["#fdfbfb", "#ebedee"] },
+      { word: "map", emoji: "🗺️", label: "Explorer Map", colors: ["#84fab0", "#8fd3f4"] },
+      { word: "jam", emoji: "🍓", label: "Berry Jam", colors: ["#ff9a9e", "#fecfef"] },
+      { word: "run", emoji: "🏃‍♂️", label: "Fast Run", colors: ["#f7ff00", "#db36a4"] },
+      { word: "toy", emoji: "🪀", label: "Fun Toy", colors: ["#c471f5", "#fa71cd"] },
+      { word: "cup", emoji: "☕", label: "Cozy Cup", colors: ["#fbd3e9", "#bb377d"] },
+      { word: "egg", emoji: "🥚", label: "Tiny Egg", colors: ["#e0c3fc", "#8ec5fc"] },
+      { word: "fin", emoji: "🐠", label: "Fish Fin", colors: ["#a1c4fd", "#c2e9fb"] },
+      { word: "log", emoji: "🪵", label: "Forest Log", colors: ["#f5f7fa", "#c3cfe2"] },
+      { word: "rug", emoji: "🧩", label: "Play Rug", colors: ["#ffecd2", "#fcb69f"] },
+      { word: "hug", emoji: "🤗", label: "Warm Hug", colors: ["#fbd786", "#c6ffdd"] },
+      { word: "kid", emoji: "🧒", label: "Bright Kid", colors: ["#ffecd2", "#fcb69f"] }
     ];
+
+    const WORDS = WORD_CARDS.map(card => card.word);
+    const WORD_LOOKUP = WORD_CARDS.reduce((map, card) => {
+      map[card.word] = card;
+      return map;
+    }, {});
 
     const LADDER_RUNGS = 8;
     const RUNG_HEIGHT = 30;
@@ -538,6 +701,27 @@
       }
     }
 
+    function renderWordCard(word) {
+      const picture = document.getElementById("wordPicture");
+      const label = document.getElementById("wordLabel");
+      const card = WORD_LOOKUP[word];
+      if (!card) {
+        picture.innerHTML = "";
+        label.textContent = "";
+        picture.removeAttribute("aria-label");
+        return;
+      }
+      const [start, end] = card.colors;
+      picture.style.setProperty("--start-color", start || "#fff4c7");
+      picture.style.setProperty("--end-color", end || start || "#ffd93d");
+      picture.innerHTML = `
+        <span class="word-emoji" aria-hidden="true">${card.emoji}</span>
+        <span class="word-emoji-echo" aria-hidden="true">${card.emoji}</span>
+      `;
+      picture.setAttribute("aria-label", card.label);
+      label.textContent = card.label;
+    }
+
     function newWord() {
       const available = WORDS.filter(w => !wordsUsed.has(w));
       if (available.length === 0) {
@@ -547,6 +731,7 @@
       wordsUsed.add(currentWord);
 
       document.getElementById("wordDisplay").textContent = currentWord.toUpperCase();
+      renderWordCard(currentWord);
       document.getElementById("wordInput").value = "";
       document.getElementById("feedback").textContent = "";
       document.getElementById("feedback").className = "feedback";
