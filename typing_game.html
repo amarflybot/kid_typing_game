@@ -86,6 +86,40 @@
       margin-bottom: 20px;
     }
 
+    .tab-bar {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .tab-button {
+      flex: 1;
+      border: none;
+      border-radius: 18px;
+      padding: 12px 18px;
+      font-family: "Fredoka One", cursive;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      color: #b56576;
+      background: rgba(255,255,255,0.7);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 6px 12px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .tab-button.active {
+      background: linear-gradient(145deg, #ff9a9e, #fad0c4);
+      color: #8c2f39;
+      box-shadow: 0 6px 0 rgba(255,154,158,0.6), 0 12px 25px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .tab-panel {
+      display: none;
+      width: 100%;
+    }
+    .tab-panel.show {
+      display: block;
+    }
+
     .status-bar {
       width: 100%;
       display: flex;
@@ -378,6 +412,198 @@
     @keyframes coinBurst {
       0% { transform: translate(-50%, 0) scale(0.5); opacity: 1; }
       100% { transform: translate(-50%, -30px) scale(1.2); opacity: 0; }
+    }
+
+    .car-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .car-photo-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 20px;
+      padding: 14px 18px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+    .car-photo-card img {
+      width: 90px;
+      height: 90px;
+      border-radius: 18px;
+      object-fit: cover;
+      border: 4px solid #ffd93d;
+      box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    }
+    .car-photo-text {
+      font-family: "Fredoka One", cursive;
+      color: #ff7043;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+    .car-area {
+      width: 100%;
+      height: 320px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #cdeefd 0%, #8bd3ff 60%, #6cc070 100%);
+      border: 4px solid #64b5f6;
+      box-shadow: inset 0 3px 12px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .car-track {
+      position: absolute;
+      bottom: 50px;
+      left: 8%;
+      right: 8%;
+      height: 120px;
+      background: repeating-linear-gradient(
+        90deg,
+        #4f4f4f 0px,
+        #4f4f4f 40px,
+        #5c5c5c 40px,
+        #5c5c5c 80px
+      );
+      border-radius: 60px;
+      border: 6px solid #333;
+      box-shadow: 0 15px 25px rgba(0,0,0,0.25);
+    }
+    .car-track::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        #fff 0,
+        #fff 20px,
+        transparent 20px,
+        transparent 40px
+      );
+      transform: translateY(-50%);
+      opacity: 0.9;
+    }
+    .car-flag {
+      position: absolute;
+      right: 5%;
+      bottom: 150px;
+      font-size: 2.4rem;
+      animation: bounce 0.8s ease-in-out infinite;
+    }
+    .race-car {
+      position: absolute;
+      bottom: 95px;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateX(-50%);
+      transition: left 0.5s ease;
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.3));
+    }
+    .race-car span {
+      font-size: 3rem;
+    }
+    .car-word-card {
+      background: linear-gradient(145deg, var(--car-start, #fdfbfb), var(--car-end, #ebedee));
+      border-radius: 24px;
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .car-word-icon {
+      width: 90px;
+      height: 90px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.05);
+    }
+    .car-word-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .car-mission {
+      margin: 0;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      color: #00b894;
+      text-transform: uppercase;
+    }
+    .car-word {
+      margin: 0;
+      font-family: "Fredoka One", cursive;
+      font-size: 2.6rem;
+      letter-spacing: 0.2em;
+      color: #ff7043;
+    }
+    .car-input-stack {
+      background: rgba(255,255,255,0.92);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+    .car-feedback {
+      font-weight: 700;
+      color: #ff7043;
+      min-height: 1.5em;
+      text-align: center;
+    }
+    .car-progress {
+      width: 100%;
+      height: 16px;
+      border-radius: 10px;
+      background: #e0e0e0;
+      overflow: hidden;
+      position: relative;
+    }
+    .car-progress::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
+      animation: shimmer 2s linear infinite;
+    }
+    .car-progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(145deg, #ffb347, #ffcc33);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .car-progress-text {
+      margin: 0;
+      text-align: center;
+      font-weight: 700;
+      color: #6c757d;
+    }
+    .car-win {
+      display: none;
+      text-align: center;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .car-win.show {
+      display: block;
     }
     
     .game-area {
@@ -755,81 +981,124 @@
   <div class="main-card">
     <h1>🦸 Mario Typing Adventure</h1>
     <p class="instructions">Type the word below to make Mario climb the ladder! ✨</p>
-    <div class="status-bar">
-      <div class="status-chip">
-        <span class="status-label">Level</span>
-        <span class="status-value" id="levelDisplay">1</span>
-      </div>
-      <div class="status-chip coin">
-        <span class="status-label">Coins</span>
-        <span class="status-value" id="scoreDisplay">0</span>
-      </div>
-      <div class="status-chip hearts" aria-live="polite">
-        <span class="status-label">Hearts</span>
-        <span class="hearts-row" id="heartsDisplay"></span>
-      </div>
-    </div>
-    <div class="mission-card">
-      <p class="mission-label">Mission</p>
-      <p class="mission-text" id="missionText">Get ready to type!</p>
+    <div class="tab-bar">
+      <button class="tab-button active" data-tab="ladderTab">Ladder Mode</button>
+      <button class="tab-button" data-tab="carTab">Car Dash</button>
     </div>
 
-    <div class="game-layout">
-      <div class="game-column left">
-        <div class="kid-showcase">
-          <div class="kid-photo-frame">
-            <img src="kid.jpg" alt="Excited kid cheering you on" class="kid-photo">
-            <span class="kid-badge">Let's go!</span>
-          </div>
-          <div class="kid-quote">
-            I'm fired up to climb this ladder!
-            <span>Type fast with me 💥</span>
-          </div>
+    <div class="tab-panel show" id="ladderTab">
+      <div class="status-bar">
+        <div class="status-chip">
+          <span class="status-label">Level</span>
+          <span class="status-value" id="levelDisplay">1</span>
         </div>
-        <div class="interaction-panel">
-          <div class="action-buttons">
-            <button class="action-btn" id="hearButton" type="button">🔊 Hear Word</button>
-            <button class="action-btn" id="cheerButton" type="button">🎉 Kid Cheer</button>
-          </div>
-          <p class="cheer-text" id="cheerText">Tap a button for help or cheer!</p>
-          <div class="sticker-display" id="stickerDisplay" aria-live="polite"></div>
+        <div class="status-chip coin">
+          <span class="status-label">Coins</span>
+          <span class="status-value" id="scoreDisplay">0</span>
+        </div>
+        <div class="status-chip hearts" aria-live="polite">
+          <span class="status-label">Hearts</span>
+          <span class="hearts-row" id="heartsDisplay"></span>
         </div>
       </div>
-      <div class="game-column center">
-        <div class="word-card">
-          <div class="word-picture" id="wordPicture" role="img" aria-live="polite"></div>
-          <p class="word-label" id="wordLabel"></p>
-          <div class="word-bubble">
-            <p class="word-display" id="wordDisplay"></p>
+      <div class="mission-card">
+        <p class="mission-label">Mission</p>
+        <p class="mission-text" id="missionText">Get ready to type!</p>
+      </div>
+  
+      <div class="game-layout">
+        <div class="game-column left">
+          <div class="kid-showcase">
+            <div class="kid-photo-frame">
+              <img src="Ashu.jpg" alt="Excited kid cheering you on" class="kid-photo">
+              <span class="kid-badge">Let's go!</span>
+            </div>
+            <div class="kid-quote">
+              I'm fired up to climb this ladder!
+              <span>Type fast with me 💥</span>
+            </div>
+          </div>
+          <div class="interaction-panel">
+            <div class="action-buttons">
+              <button class="action-btn" id="hearButton" type="button">🔊 Hear Word</button>
+              <button class="action-btn" id="cheerButton" type="button">🎉 Kid Cheer</button>
+            </div>
+            <p class="cheer-text" id="cheerText">Tap a button for help or cheer!</p>
+            <div class="sticker-display" id="stickerDisplay" aria-live="polite"></div>
           </div>
         </div>
-        <div class="input-stack">
-          <div class="input-wrapper">
-            <input type="text" id="wordInput" maxlength="3" placeholder="???">
+        <div class="game-column center">
+          <div class="word-card">
+            <div class="word-picture" id="wordPicture" role="img" aria-live="polite"></div>
+            <p class="word-label" id="wordLabel"></p>
+            <div class="word-bubble">
+              <p class="word-display" id="wordDisplay"></p>
+            </div>
           </div>
-          <p class="feedback" id="feedback"></p>
-          <div class="progress-panel">
-            <div class="progress-bar" id="progressBar"></div>
-            <p class="progress-text" id="progressText">Ladder: 0 / 8</p>
+          <div class="input-stack">
+            <div class="input-wrapper">
+              <input type="text" id="wordInput" maxlength="3" placeholder="???">
+            </div>
+            <p class="feedback" id="feedback"></p>
+            <div class="progress-panel">
+              <div class="progress-bar" id="progressBar"></div>
+              <p class="progress-text" id="progressText">Ladder: 0 / 8</p>
+            </div>
+          </div>
+        </div>
+        <div class="game-column right">
+          <div class="game-area">
+            <span class="flag">🏁</span>
+            <div class="ladder" id="ladder"></div>
+            <div class="mario" id="mario">
+              <img src="Ashu.jpg" alt="Mario" class="mario-avatar">
+            </div>
           </div>
         </div>
       </div>
-      <div class="game-column right">
-        <div class="game-area">
-          <span class="flag">🏁</span>
-          <div class="ladder" id="ladder"></div>
-          <div class="mario" id="mario">
-            <img src="kid.jpg" alt="Mario" class="mario-avatar">
-          </div>
-        </div>
+      
+      <div class="win-message" id="winMessage">
+        <p class="trophy">🏆</p>
+        <p class="feedback correct">Mario reached the top! You're a typing champion! 🌟</p>
+        <p class="feedback win-score" id="winScore"></p>
+        <button class="btn" onclick="restart(true)">Next Level! 🚀</button>
       </div>
     </div>
-    
-    <div class="win-message" id="winMessage">
-      <p class="trophy">🏆</p>
-      <p class="feedback correct">Mario reached the top! You're a typing champion! 🌟</p>
-      <p class="feedback win-score" id="winScore"></p>
-      <button class="btn" onclick="restart(true)">Next Level! 🚀</button>
+
+    <div class="tab-panel" id="carTab">
+      <div class="car-panel">
+        <div class="car-area">
+          <span class="car-flag">🏁</span>
+          <div class="car-track"></div>
+          <div class="race-car" id="raceCar">
+            <span>🏎️</span>
+          </div>
+        </div>
+        <div class="car-photo-card">
+          <img src="Abhi.jpg" alt="Smiling racer ready to zoom">
+          <p class="car-photo-text">Captain Zoom is ready! Type fast to fuel the race. 🏎️⚡</p>
+        </div>
+        <div class="car-word-card">
+          <div class="car-word-icon" id="carWordIcon" aria-hidden="true">🏎️</div>
+          <div class="car-word-info">
+            <p class="car-mission" id="carMission">Fuel up with a speedy word!</p>
+            <p class="car-word" id="carWordDisplay">CAR</p>
+          </div>
+        </div>
+        <div class="car-input-stack">
+          <input type="text" id="carWordInput" maxlength="3" placeholder="car">
+          <p class="car-feedback" id="carFeedback"></p>
+          <div class="car-progress">
+            <div class="car-progress-bar" id="carProgressBar"></div>
+          </div>
+          <p class="car-progress-text" id="carProgressText">Lap: 0 / 6</p>
+          <button class="btn car-btn" type="button" id="carRestartBtn">Start New Race</button>
+        </div>
+        <div class="car-win" id="carWinMessage">
+          <p>🏆 Vroom! You won the race!</p>
+          <button class="btn" type="button" id="carPlayAgainBtn">Race Again</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -868,6 +1137,32 @@
       return map;
     }, {});
 
+    const CAR_WORD_CARDS = [
+      { word: "car", emoji: "🏎️", mission: "Hit the gas for the race car!", colors: ["#f5576c", "#f093fb"] },
+      { word: "bus", emoji: "🚌", mission: "Pick up friends on the bus!", colors: ["#fbd786", "#f7797d"] },
+      { word: "van", emoji: "🚐", mission: "Pack the adventure van!", colors: ["#84fab0", "#8fd3f4"] },
+      { word: "cab", emoji: "🚕", mission: "Call the speedy cab!", colors: ["#f6d365", "#fda085"] },
+      { word: "gas", emoji: "⛽", mission: "Fuel up the tank!", colors: ["#fceabb", "#f8b500"] },
+      { word: "oil", emoji: "🛢️", mission: "Oil the engine!", colors: ["#d5d4d0", "#fff1eb"] },
+      { word: "key", emoji: "🔑", mission: "Twist the shiny key!", colors: ["#c6ffdd", "#fbd786"] },
+      { word: "map", emoji: "🗺️", mission: "Plan the rally map!", colors: ["#c471f5", "#fa71cd"] },
+      { word: "lap", emoji: "♾️", mission: "Finish the hot lap!", colors: ["#ffecd2", "#fcb69f"] },
+      { word: "pit", emoji: "🏁", mission: "Zip into the pit stop!", colors: ["#a1c4fd", "#c2e9fb"] },
+      { word: "rim", emoji: "🛞", mission: "Shine the wheel rim!", colors: ["#d4fc79", "#96e6a1"] },
+      { word: "lug", emoji: "🔩", mission: "Tighten the lug nuts!", colors: ["#e0c3fc", "#8ec5fc"] },
+      { word: "rev", emoji: "🎛️", mission: "Rev the roaring engine!", colors: ["#ff9a9e", "#fecfef"] },
+      { word: "jet", emoji: "🛩️", mission: "Jet boost the car!", colors: ["#667db6", "#0082c8"] },
+      { word: "tow", emoji: "🚨", mission: "Call the tow crew!", colors: ["#fff1eb", "#ace0f9"] },
+      { word: "zip", emoji: "⚡", mission: "Zip past the finish!", colors: ["#fda085", "#f6d365"] },
+      { word: "tax", emoji: "💸", mission: "Pay the race tax!", colors: ["#fbc2eb", "#a6c1ee"] },
+      { word: "hub", emoji: "⚙️", mission: "Grease the hub!", colors: ["#fdfbfb", "#ebedee"] }
+    ];
+    const CAR_WORDS = CAR_WORD_CARDS.map(card => card.word);
+    const CAR_LOOKUP = CAR_WORD_CARDS.reduce((map, card) => {
+      map[card.word] = card;
+      return map;
+    }, {});
+
     const CHEER_MESSAGES = [
       "Clap clap! Let's do it!",
       "We got this, superstar!",
@@ -892,6 +1187,7 @@
     const HEART_CAP = 6;
     const POINTS_PER_WORD = 10;
     const LEVEL_BONUS = 20;
+    const CAR_STEPS = 6;
 
     let currentWord = "";
     let currentRung = 0;
@@ -901,6 +1197,9 @@
     let maxLives = BASE_LIVES;
     let lives = maxLives;
     let level = 1;
+    let carCurrentWord = "";
+    let carProgress = 0;
+    let carWordsUsed = new Set();
 
     function initAudio() {
       if (!audioCtx) {
@@ -1071,6 +1370,101 @@
       }
     }
 
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tabId);
+      });
+      document.querySelectorAll(".tab-panel").forEach(panel => {
+        panel.classList.toggle("show", panel.id === tabId);
+      });
+      if (tabId === "ladderTab") {
+        document.getElementById("wordInput").focus();
+      } else if (tabId === "carTab") {
+        document.getElementById("carWordInput").focus();
+      }
+    }
+
+    function updateCarProgressDisplay() {
+      const bar = document.getElementById("carProgressBar");
+      if (bar) {
+        bar.style.width = `${(Math.min(carProgress, CAR_STEPS) / CAR_STEPS) * 100}%`;
+      }
+      const text = document.getElementById("carProgressText");
+      if (text) {
+        text.textContent = `Lap: ${Math.min(carProgress, CAR_STEPS)} / ${CAR_STEPS}`;
+      }
+    }
+
+    function updateCarPosition() {
+      const car = document.getElementById("raceCar");
+      if (!car) return;
+      const ratio = Math.min(carProgress, CAR_STEPS) / CAR_STEPS;
+      const left = 10 + ratio * 80;
+      car.style.left = left + "%";
+    }
+
+    function newCarWord() {
+      const carInput = document.getElementById("carWordInput");
+      if (!carInput) return;
+      const available = CAR_WORDS.filter(w => !carWordsUsed.has(w));
+      if (available.length === 0) {
+        carWordsUsed.clear();
+      }
+      carCurrentWord = (available.length ? available : CAR_WORDS)[Math.floor(Math.random() * (available.length || CAR_WORDS.length))];
+      carWordsUsed.add(carCurrentWord);
+      renderCarCard(carCurrentWord);
+      carInput.value = "";
+      carInput.placeholder = carCurrentWord.toLowerCase();
+      carInput.focus();
+      document.getElementById("carFeedback").textContent = "";
+    }
+
+    function finishCarRace() {
+      const winBox = document.getElementById("carWinMessage");
+      if (winBox) {
+        winBox.classList.add("show");
+      }
+      showConfetti();
+      document.getElementById("carFeedback").textContent = "🏁 Hot wheels! You finished the race!";
+      const carInput = document.getElementById("carWordInput");
+      if (carInput) carInput.blur();
+    }
+
+    function checkCarWord() {
+      const input = document.getElementById("carWordInput");
+      if (!input) return;
+      if (carProgress >= CAR_STEPS) return;
+      const typed = input.value.trim().toLowerCase();
+      if (!typed) return;
+      if (typed === carCurrentWord) {
+        carProgress++;
+        document.getElementById("carFeedback").textContent = "Vroom! Keep racing!";
+        showStickerReward();
+        updateCarProgressDisplay();
+        updateCarPosition();
+        if (carProgress >= CAR_STEPS) {
+          finishCarRace();
+          return;
+        }
+        setTimeout(newCarWord, 400);
+      } else {
+        document.getElementById("carFeedback").textContent = "Slow down! Try again.";
+        input.value = "";
+        input.focus();
+      }
+    }
+
+    function resetCarRace() {
+      carProgress = 0;
+      carWordsUsed.clear();
+      const winBox = document.getElementById("carWinMessage");
+      if (winBox) winBox.classList.remove("show");
+      updateCarProgressDisplay();
+      updateCarPosition();
+      document.getElementById("carFeedback").textContent = "";
+      newCarWord();
+    }
+
     function speakWord(word) {
       if (!word) return;
       const button = document.getElementById("hearButton");
@@ -1128,6 +1522,20 @@
 
     document.getElementById("hearButton").addEventListener("click", () => speakWord(currentWord));
     document.getElementById("cheerButton").addEventListener("click", () => kidCheer());
+
+    function renderCarCard(word) {
+      const card = CAR_LOOKUP[word];
+      const cardEl = document.querySelector(".car-word-card");
+      if (!cardEl || !card) return;
+      cardEl.style.setProperty("--car-start", card.colors?.[0] || "#fdfbfb");
+      cardEl.style.setProperty("--car-end", card.colors?.[1] || card.colors?.[0] || "#ebedee");
+      const icon = document.getElementById("carWordIcon");
+      if (icon) icon.textContent = card.emoji;
+      const wordDisplay = document.getElementById("carWordDisplay");
+      if (wordDisplay) wordDisplay.textContent = card.word.toUpperCase();
+      const mission = document.getElementById("carMission");
+      if (mission) mission.textContent = card.mission || `Type ${card.word.toUpperCase()} to zoom!`;
+    }
 
     function renderWordCard(word) {
       const picture = document.getElementById("wordPicture");
@@ -1230,6 +1638,22 @@
       }
     });
 
+    document.getElementById("carWordInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        checkCarWord();
+      } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const input = document.getElementById("carWordInput");
+        playKeySound(input.value.length);
+        input.classList.add("keypress");
+        setTimeout(() => input.classList.remove("keypress"), 150);
+      }
+    });
+    document.getElementById("carRestartBtn").addEventListener("click", () => resetCarRace());
+    document.getElementById("carPlayAgainBtn").addEventListener("click", () => resetCarRace());
+    document.querySelectorAll(".tab-button").forEach(btn => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
     function restart(nextLevel = false) {
       currentRung = 0;
       wordsUsed.clear();
@@ -1262,6 +1686,8 @@
     updateStatusBar();
     updateMario();
     newWord();
+    resetCarRace();
+    switchTab("ladderTab");
   </script>
 </body>
 </html>
