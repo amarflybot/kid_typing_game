@@ -4,7 +4,7 @@ import { CarDash } from '../CarDash'
 
 describe('CarDash', () => {
   const enterWord = (value = 'car') => {
-    const input = screen.getByPlaceholderText(/car/i) as HTMLInputElement
+    const input = screen.getByPlaceholderText<HTMLInputElement>(/car/i)
     fireEvent.change(input, { target: { value } })
     fireEvent.keyDown(input, { key: 'Enter', currentTarget: input })
   }

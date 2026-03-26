@@ -1,12 +1,4 @@
-export type WordCard = {
-  word: string
-  emoji: string
-  label: string
-  colors: readonly [string, string]
-  mission: string
-}
-
-export const WORD_CARDS = [
+const WORD_CARD_DATA = [
   { word: 'cat', emoji: '🐱', label: 'Playful Cat', colors: ['#ffd1dc', '#ff9a8b'], mission: 'Wake up the cuddly kitty word!' },
   { word: 'dog', emoji: '🐶', label: 'Happy Dog', colors: ['#d4fc79', '#96e6a1'], mission: 'Call the happy puppy word!' },
   { word: 'sun', emoji: '☀️', label: 'Sunny Sun', colors: ['#fddb92', '#f8b500'], mission: 'Shine the bright sun word!' },
@@ -32,13 +24,16 @@ export const WORD_CARDS = [
   { word: 'rug', emoji: '🧩', label: 'Play Rug', colors: ['#ffecd2', '#fcb69f'], mission: 'Jump on the play rug word!' },
   { word: 'hug', emoji: '🤗', label: 'Warm Hug', colors: ['#fbd786', '#c6ffdd'], mission: 'Share the warm hug word!' },
   { word: 'kid', emoji: '🧒', label: 'Bright Kid', colors: ['#ffecd2', '#fcb69f'], mission: 'Spell the bright kid power word!' },
-] satisfies WordCard[]
+] as const
 
-export type Word = (typeof WORD_CARDS)[number]['word']
+export type Word = (typeof WORD_CARD_DATA)[number]['word']
+export type WordCard = (typeof WORD_CARD_DATA)[number]
+
+export const WORD_CARDS: WordCard[] = [...WORD_CARD_DATA]
 
 export const WORD_LOOKUP: Record<Word, WordCard> = WORD_CARDS.reduce<Record<Word, WordCard>>((map, card) => {
-  map[card.word as Word] = card
+  map[card.word] = card
   return map
 }, {} as Record<Word, WordCard>)
 
-export const WORDS: Word[] = WORD_CARDS.map((card) => card.word as Word)
+export const WORDS: Word[] = WORD_CARDS.map((card) => card.word)

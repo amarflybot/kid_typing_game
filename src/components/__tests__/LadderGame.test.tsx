@@ -5,7 +5,7 @@ import { LadderGame } from '../LadderGame'
 
 describe('LadderGame', () => {
   const enterWord = (value = 'cat') => {
-    const input = screen.getByPlaceholderText('???') as HTMLInputElement
+    const input = screen.getByPlaceholderText<HTMLInputElement>('???')
     fireEvent.change(input, { target: { value } })
     fireEvent.keyDown(input, { key: 'Enter', currentTarget: input })
   }
@@ -31,7 +31,7 @@ describe('LadderGame', () => {
     expect(screen.getByText(/Ladder:/i)).toHaveTextContent('Ladder: 1 / 8')
   })
 
-  it('penalizes wrong guesses and refills hearts after a timeout', async () => {
+  it('penalizes wrong guesses and refills hearts after a timeout', () => {
     vi.useFakeTimers()
     try {
       render(<LadderGame />)
@@ -44,7 +44,7 @@ describe('LadderGame', () => {
       const heartsRow = screen.getByLabelText('Hearts status')
       expect(heartsRow.textContent).toContain('🤍')
 
-      await act(async () => {
+      act(() => {
         vi.advanceTimersByTime(700)
       })
       expect(heartsRow).toHaveTextContent('❤️❤️❤️')

@@ -34,7 +34,7 @@ const playTone = (ctxRef: AudioContextRef, freq: number, duration = 0.1, type: O
       ctxRef.current = new (window.AudioContext || window.webkitAudioContext)()
     }
     const ctx = ctxRef.current
-    if (ctx.state === 'suspended') ctx.resume()
+    if (ctx.state === 'suspended') void ctx.resume()
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.connect(gain)
@@ -82,8 +82,8 @@ const createWordPicker = () => {
   return () => {
     const available = WORDS.filter((word) => !used.has(word))
     if (!available.length) used.clear()
-    const source = available.length ? available : WORDS
-    const next = source[Math.floor(Math.random() * source.length)] as Word
+    const source: Word[] = available.length ? available : WORDS
+    const next = source[Math.floor(Math.random() * source.length)]
     used.add(next)
     return next
   }
@@ -124,7 +124,7 @@ export const LadderGame = () => {
   const progressColorTimeoutRef = useRef<number | null>(null)
 
   const focusInput = useCallback(() => {
-    requestAnimationFrame(() => wordInputRef.current?.focus())
+    void window.requestAnimationFrame(() => wordInputRef.current?.focus())
   }, [])
 
   const clearTimers = useCallback(() => {

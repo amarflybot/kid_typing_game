@@ -1,11 +1,4 @@
-export type CarWordCard = {
-  word: string
-  emoji: string
-  mission: string
-  colors: readonly [string, string]
-}
-
-export const CAR_WORD_CARDS = [
+const CAR_WORD_DATA = [
   { word: 'car', emoji: '🏎️', mission: 'Hit the gas for the race car!', colors: ['#f5576c', 'rgb(232,180,237)'] },
   { word: 'bus', emoji: '🚌', mission: 'Pick up friends on the bus!', colors: ['#fbd786', '#f7797d'] },
   { word: 'van', emoji: '🚐', mission: 'Pack the adventure van!', colors: ['#84fab0', '#8fd3f4'] },
@@ -24,16 +17,19 @@ export const CAR_WORD_CARDS = [
   { word: 'zip', emoji: '⚡', mission: 'Zip past the finish!', colors: ['#fda085', '#f6d365'] },
   { word: 'tax', emoji: '💸', mission: 'Pay the race tax!', colors: ['#fbc2eb', '#a6c1ee'] },
   { word: 'hub', emoji: '⚙️', mission: 'Grease the hub!', colors: ['#fdfbfb', '#ebedee'] },
-] satisfies CarWordCard[]
+] as const
 
-export type CarWord = (typeof CAR_WORD_CARDS)[number]['word']
+export type CarWord = (typeof CAR_WORD_DATA)[number]['word']
+export type CarWordCard = (typeof CAR_WORD_DATA)[number]
+
+export const CAR_WORD_CARDS: CarWordCard[] = [...CAR_WORD_DATA]
 
 export const CAR_LOOKUP: Record<CarWord, CarWordCard> = CAR_WORD_CARDS.reduce<Record<CarWord, CarWordCard>>(
   (map, card) => {
-    map[card.word as CarWord] = card
+    map[card.word] = card
     return map
   },
-  {} as Record<CarWord, CarWordCard>
+  {} as Record<CarWord, CarWordCard>,
 )
 
-export const CAR_WORDS: CarWord[] = CAR_WORD_CARDS.map((card) => card.word as CarWord)
+export const CAR_WORDS: CarWord[] = CAR_WORD_CARDS.map((card) => card.word)

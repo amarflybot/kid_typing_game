@@ -49,10 +49,11 @@ const createBuilderChallenge = (): BuilderChallenge => {
 
 const createBuilderState = (): BuilderState => {
   const challenge = createBuilderChallenge()
+  const slotCount = challenge.card.word.length
   return {
     challenge,
-    slots: Array(challenge.card.word.length).fill(''),
-    placement: Array(challenge.card.word.length).fill(null),
+    slots: Array.from<string>({ length: slotCount }, () => ''),
+    placement: Array.from<(number | null)>({ length: slotCount }, () => null),
   }
 }
 

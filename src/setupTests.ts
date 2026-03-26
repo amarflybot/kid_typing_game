@@ -26,7 +26,6 @@ class MockAudioContext {
   createGain() {
     return new MockGainNode()
   }
-  // eslint-disable-next-line class-methods-use-this
   destination = {}
 }
 

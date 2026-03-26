@@ -27,7 +27,7 @@ const playTone = (ctxRef: AudioContextRef, freq: number, duration = 0.1) => {
       ctxRef.current = new (window.AudioContext || window.webkitAudioContext)()
     }
     const ctx = ctxRef.current
-    if (ctx.state === 'suspended') ctx.resume()
+    if (ctx.state === 'suspended') void ctx.resume()
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.connect(gain)
@@ -57,8 +57,8 @@ const createCarPicker = () => {
   return () => {
     const available = CAR_WORDS.filter((word) => !used.has(word))
     if (!available.length) used.clear()
-    const selection = available.length ? available : CAR_WORDS
-    const next = selection[Math.floor(Math.random() * selection.length)] as CarWord
+    const selection: CarWord[] = available.length ? available : CAR_WORDS
+    const next = selection[Math.floor(Math.random() * selection.length)]
     used.add(next)
     return next
   }
@@ -89,7 +89,7 @@ export const CarDash = () => {
   const nextWordTimeoutRef = useRef<number | null>(null)
 
   const focusInput = useCallback(() => {
-    requestAnimationFrame(() => wordInputRef.current?.focus())
+    void window.requestAnimationFrame(() => wordInputRef.current?.focus())
   }, [])
 
   const setNewWord = useCallback(() => {
