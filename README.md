@@ -1,54 +1,34 @@
-# Mario Typing Adventure 🎮
+# Mario Typing Adventure
 
-A kid-friendly typing game where Mario climbs a ladder as you type 3-letter words correctly!
+A kid-friendly typing game built with React 19 + Vite + TypeScript. Players can practice three-letter words in two fun modes:
 
-## How to Play
+- **Ladder Mode:** climb rungs by typing words correctly.
+- **Car Dash:** race a car around the track with each correct word.
 
-1. **Run the game**: `python typing_game.py`
-2. **Read the word** shown in big letters at the top
-3. **Type the word** in the input box (press Enter to submit)
-4. **Make Mario climb!** Each correct word moves Mario up one ladder rung
-5. **Reach the top** to win! 🏆
+Both modes include cheerful audio cues, colorful word cards, and animated progress indicators to keep young learners engaged.
 
-## Requirements
+## Getting Started
 
-- Python 3.6 or higher
-- tkinter (included with most Python installations)
-
-## Run the Game
-
-### Option 1: Browser Version (Recommended - works on all systems)
-
-Double-click `typing_game.html` or run:
+Install dependencies once:
 
 ```bash
-open typing_game.html
+npm install
 ```
 
-This opens the game in your default browser—no Python GUI compatibility issues!
+Available scripts:
 
-### Option 2: Python/tkinter Version
+- `npm run dev` – start Vite dev server with HMR.
+- `npm run build` – type-check and build the production bundle to `dist`.
+- `npm run preview` – preview the production build locally.
+- `npm run lint` – run the ESLint + TypeScript checks.
 
-```bash
-python typing_game.py
-```
+## Deployment (GitHub Pages)
 
-**Note:** If you get a "macOS version required" or tkinter abort error, use the browser version above instead.
+The repo is configured to deploy automatically to GitHub Pages at\
+`https://amarflybot.github.io/kid_typing_game/`.
 
-On some Linux systems, you may need to install tkinter:
+1. Push or merge changes into the `main` branch.
+2. GitHub Actions workflow `.github/workflows/deploy.yml` installs dependencies, runs `npm run build`, and uploads the `dist` folder as a Pages artifact.
+3. The `Deploy to GitHub Pages` job publishes the site. You can monitor progress in the Actions tab.
 
-- **Ubuntu/Debian**: `sudo apt-get install python3-tk`
-- **Fedora**: `sudo dnf install python3-tkinter`
-- **macOS**: tkinter is included with the standard Python installation
-
-## Features
-
-- 🦸 Simple Mario-style character that climbs a ladder
-- 📝 80+ kid-friendly 3-letter words (cat, dog, run, fun, sun...)
-- 🎨 Bright, colorful interface designed for kids
-- 🏆 Win celebration when Mario reaches the top
-- 🔄 Play Again button to restart
-
-## Screenshot
-
-The game shows a ladder with Mario at the bottom. Type each word correctly to watch Mario jump up each rung until he reaches the top!
+If you need to redeploy manually, trigger the workflow via **Actions → Deploy to GitHub Pages → Run workflow**.

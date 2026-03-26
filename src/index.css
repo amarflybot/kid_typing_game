@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800&display=swap');
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #87ceeb 0%, #98d8c8 50%, #7bc67e 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
