@@ -1,53 +1,32 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { WORD_CARDS, type WordCard } from '../data/wordCards'
 import { BASE_URL } from '../utils/baseUrl'
 
-type ShapePrompt = {
-  id: string
-  label: string
-  clue: string
-  emoji: string
-}
-
-type CountPrompt = {
-  id: string
-  prompt: string
-  emoji: string
-  answer: number
-  helper: string
-}
-
-type ShapeChallenge = {
-  prompt: ShapePrompt
+type BuilderChallenge = {
+  card: WordCard
   options: string[]
 }
 
-type CountChallenge = {
-  prompt: CountPrompt
-  options: number[]
+type BuilderState = {
+  challenge: BuilderChallenge
+  slots: string[]
+  placement: (number | null)[]
 }
 
-const SHAPE_PROMPTS: ShapePrompt[] = [
-  { id: 'circle', label: 'Circle', clue: 'Round like the bright sun!', emoji: '🟡' },
-  { id: 'triangle', label: 'Triangle', clue: 'Pointy like a mountain peak!', emoji: '🔺' },
-  { id: 'square', label: 'Square', clue: 'Four sides like a cozy window.', emoji: '🟥' },
-  { id: 'star', label: 'Star', clue: 'Twinkles in the night sky.', emoji: '⭐' },
-  { id: 'heart', label: 'Heart', clue: 'Full of love and hugs.', emoji: '❤️' },
-]
+type MatchChallenge = {
+  answer: WordCard
+  options: WordCard[]
+}
 
-const COUNT_PROMPTS: CountPrompt[] = [
-  { id: 'apples', prompt: 'Count the apples for the picnic basket.', emoji: '🍎', answer: 4, helper: 'Tap the right number to feed the bunny.' },
-  { id: 'rainbows', prompt: 'How many tiny rainbows sparkle?', emoji: '🌈', answer: 3, helper: 'A sprinkle of color magic!' },
-  { id: 'ducks', prompt: 'Quack quack! How many ducklings swim?', emoji: '🦆', answer: 5, helper: 'Count each buddy in the pond.' },
-  { id: 'kites', prompt: 'How many kites zoom in the sky?', emoji: '🪁', answer: 2, helper: 'Spot every zig-zag tail.' },
-  { id: 'shells', prompt: 'Count the shiny shells on the sand.', emoji: '🐚', answer: 6, helper: 'Wave hello as you count!' },
-]
-
-const NUMBER_POOL = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-const HAPPY_SHAPE_MESSAGES = ['Shape superstar! 🌟', 'Perfect pick! 🎯', 'You spotted it! 👀', 'Shape garden blooms! 🌼']
-const HAPPY_COUNT_MESSAGES = ['Numbers sparkle! ✨', 'Counting champ! 🏅', 'Tapping talent! 🎵', 'Great math moves! 🧠']
-const TRY_AGAIN_MESSAGE = 'Almost there — peek carefully and try again!'
-const DEFAULT_SHAPE_MESSAGE = 'Pick the shape that matches the clue.'
-const DEFAULT_COUNT_MESSAGE = 'Count the objects, then tap the number.'
+const LETTER_BANK = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+const LAB_WORDS = WORD_CARDS.filter((card) => card.word.length >= 3 && card.word.length <= 4)
+const DEFAULT_BUILDER_MESSAGE = 'Tap the tiles to build the word.'
+const DEFAULT_MATCH_MESSAGE = 'Pick the word card that matches the clue.'
+const BUILDER_WINS = ['Word garden blooming! 🌷', 'Spell superstar! 🌟', 'Letters locked in! 🔐']
+const MATCH_WINS = ['Card match magic! ✨', 'Word detective! 🔍', 'Brilliant choice! 🎉']
+const TRY_AGAIN_MESSAGE = 'Almost! Switch letters and try again.'
+const MATCH_TRY_AGAIN = 'Peek at the clue again and tap another card.'
+const ABHI_PHOTO_SRC = `${BASE_URL}Abhi.jpg`
 
 const shuffle = <T,>(items: readonly T[]): T[] => {
   const next = [...items]
@@ -60,170 +39,276 @@ const shuffle = <T,>(items: readonly T[]): T[] => {
 
 const pickRandom = <T,>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)]
 
-const createShapeChallenge = (): ShapeChallenge => {
-  const prompt = pickRandom(SHAPE_PROMPTS)
-  const distractors = shuffle(SHAPE_PROMPTS.filter((shape) => shape.id !== prompt.id)).slice(0, 2)
-  const options = shuffle([prompt.label, ...distractors.map((shape) => shape.label)])
-  return { prompt, options }
+const createBuilderChallenge = (): BuilderChallenge => {
+  const card = pickRandom(LAB_WORDS)
+  const baseLetters = card.word.toUpperCase().split('')
+  const extras = shuffle(LETTER_BANK.filter((letter) => !baseLetters.includes(letter))).slice(0, 2)
+  const options = shuffle([...baseLetters, ...extras])
+  return { card, options }
 }
 
-const createCountChallenge = (): CountChallenge => {
-  const prompt = pickRandom(COUNT_PROMPTS)
-  const extras = shuffle(NUMBER_POOL.filter((num) => num !== prompt.answer)).slice(0, 2)
-  const options = shuffle([prompt.answer, ...extras])
-  return { prompt, options }
+const createBuilderState = (): BuilderState => {
+  const challenge = createBuilderChallenge()
+  return {
+    challenge,
+    slots: Array(challenge.card.word.length).fill(''),
+    placement: Array(challenge.card.word.length).fill(null),
+  }
 }
 
-const ABHI_PHOTO_SRC = `${BASE_URL}Abhi.jpg`
+const createMatchChallenge = (): MatchChallenge => {
+  const answer = pickRandom(LAB_WORDS)
+  const distractors = shuffle(LAB_WORDS.filter((card) => card.word !== answer.word)).slice(0, 2)
+  return {
+    answer,
+    options: shuffle([answer, ...distractors]),
+  }
+}
 
-export const LearningLab = () => {
-  const [shapeChallenge, setShapeChallenge] = useState<ShapeChallenge>(() => createShapeChallenge())
-  const [countChallenge, setCountChallenge] = useState<CountChallenge>(() => createCountChallenge())
-  const [shapeMessage, setShapeMessage] = useState(DEFAULT_SHAPE_MESSAGE)
-  const [countMessage, setCountMessage] = useState(DEFAULT_COUNT_MESSAGE)
-  const [shapeScore, setShapeScore] = useState(0)
-  const [countScore, setCountScore] = useState(0)
-  const [shapeLocked, setShapeLocked] = useState(false)
-  const [countLocked, setCountLocked] = useState(false)
-  const timeoutPool = useRef<number[]>([])
+export function LearningLab() {
+  const [builderState, setBuilderState] = useState<BuilderState>(() => createBuilderState())
+  const [builderStars, setBuilderStars] = useState(0)
+  const [builderMessage, setBuilderMessage] = useState(DEFAULT_BUILDER_MESSAGE)
+  const [builderLocked, setBuilderLocked] = useState(false)
+
+  const [matchChallenge, setMatchChallenge] = useState<MatchChallenge>(() => createMatchChallenge())
+  const [matchStars, setMatchStars] = useState(0)
+  const [matchMessage, setMatchMessage] = useState(DEFAULT_MATCH_MESSAGE)
+  const [matchLocked, setMatchLocked] = useState(false)
+
+  const timeoutsRef = useRef<number[]>([])
+
+  const queue = useCallback((cb: () => void, delay = 1100) => {
+    const id = window.setTimeout(() => {
+      cb()
+      timeoutsRef.current = timeoutsRef.current.filter((stored) => stored !== id)
+    }, delay)
+    timeoutsRef.current.push(id)
+  }, [])
 
   useEffect(() => {
     return () => {
-      timeoutPool.current.forEach((id) => window.clearTimeout(id))
-      timeoutPool.current = []
+      timeoutsRef.current.forEach((id) => window.clearTimeout(id))
+      timeoutsRef.current = []
     }
   }, [])
 
-  const queue = (cb: () => void, delay = 900) => {
-    const id = window.setTimeout(() => {
-      cb()
-      timeoutPool.current = timeoutPool.current.filter((stored) => stored !== id)
-    }, delay)
-    timeoutPool.current.push(id)
-  }
+  const resetBuilder = useCallback(() => {
+    setBuilderState(createBuilderState())
+    setBuilderLocked(false)
+    setBuilderMessage(DEFAULT_BUILDER_MESSAGE)
+  }, [])
 
-  const handleShapePick = (label: string) => {
-    if (shapeLocked) return
-    if (label === shapeChallenge.prompt.label) {
-      setShapeLocked(true)
-      setShapeMessage(pickRandom(HAPPY_SHAPE_MESSAGES))
-      setShapeScore((prev) => prev + 1)
-      queue(() => {
-        setShapeChallenge(createShapeChallenge())
-        setShapeMessage(DEFAULT_SHAPE_MESSAGE)
-        setShapeLocked(false)
+  const handleLetterPick = useCallback(
+    (letter: string, optionIndex: number) => {
+      if (builderLocked) return
+      if (builderState.placement.includes(optionIndex)) return
+      let builtWord = ''
+      let filled = false
+      setBuilderState((prev) => {
+        const slotIndex = prev.placement.findIndex((idx) => idx === null)
+        if (slotIndex === -1) return prev
+        const nextSlots = [...prev.slots]
+        const nextPlacement = [...prev.placement]
+        nextSlots[slotIndex] = letter
+        nextPlacement[slotIndex] = optionIndex
+        builtWord = nextSlots.join('')
+        filled = nextPlacement.every((idx) => idx !== null)
+        return { ...prev, slots: nextSlots, placement: nextPlacement }
       })
-    } else {
-      setShapeMessage(TRY_AGAIN_MESSAGE)
-    }
-  }
+      if (!filled) {
+        setBuilderMessage('Great! Add the next letter.')
+        return
+      }
+      if (builtWord.toLowerCase() === builderState.challenge.card.word) {
+        setBuilderLocked(true)
+        setBuilderMessage(pickRandom(BUILDER_WINS))
+        setBuilderStars((prev) => prev + 1)
+        queue(() => resetBuilder())
+      } else {
+        setBuilderMessage(TRY_AGAIN_MESSAGE)
+      }
+    },
+    [builderLocked, builderState.challenge.card.word, builderState.placement, queue, resetBuilder],
+  )
 
-  const handleCountPick = (value: number) => {
-    if (countLocked) return
-    if (value === countChallenge.prompt.answer) {
-      setCountLocked(true)
-      setCountMessage(pickRandom(HAPPY_COUNT_MESSAGES))
-      setCountScore((prev) => prev + 1)
-      queue(() => {
-        setCountChallenge(createCountChallenge())
-        setCountMessage(DEFAULT_COUNT_MESSAGE)
-        setCountLocked(false)
-      })
-    } else {
-      setCountMessage(TRY_AGAIN_MESSAGE)
-    }
-  }
+  const handleUndo = useCallback(() => {
+    if (builderLocked) return
+    setBuilderState((prev) => {
+      let lastIndex = -1
+      for (let i = prev.placement.length - 1; i >= 0; i -= 1) {
+        if (prev.placement[i] !== null) {
+          lastIndex = i
+          break
+        }
+      }
+      if (lastIndex === -1) return prev
+      const nextSlots = [...prev.slots]
+      const nextPlacement = [...prev.placement]
+      nextSlots[lastIndex] = ''
+      nextPlacement[lastIndex] = null
+      return { ...prev, slots: nextSlots, placement: nextPlacement }
+    })
+    setBuilderMessage('Oops? No worries, letter removed.')
+  }, [builderLocked])
 
-  const totalStars = shapeScore + countScore
+  const shuffleBuilderTiles = useCallback(() => {
+    setBuilderState((prev) => ({
+      ...prev,
+      challenge: { ...prev.challenge, options: shuffle(prev.challenge.options) },
+    }))
+    setBuilderMessage('Tiles shuffled! Try a new order.')
+  }, [])
+
+  const skipBuilderWord = useCallback(() => {
+    resetBuilder()
+    setBuilderMessage('New word loaded. Let’s build!')
+  }, [resetBuilder])
+
+  const handleMatchPick = useCallback(
+    (word: WordCard) => {
+      if (matchLocked) return
+      if (word.word === matchChallenge.answer.word) {
+        setMatchLocked(true)
+        setMatchMessage(pickRandom(MATCH_WINS))
+        setMatchStars((prev) => prev + 1)
+        queue(() => {
+          setMatchChallenge(createMatchChallenge())
+          setMatchLocked(false)
+          setMatchMessage(DEFAULT_MATCH_MESSAGE)
+        })
+      } else {
+        setMatchMessage(MATCH_TRY_AGAIN)
+      }
+    },
+    [matchChallenge.answer.word, matchLocked, queue],
+  )
+
+  const totalStars = builderStars + matchStars
 
   return (
     <div className="learning-lab">
       <div className="status-bar">
         <div className="status-chip">
-          <span className="status-label">Shape Wins</span>
-          <span className="status-value">{shapeScore}</span>
+          <span className="status-label">Builder Stars</span>
+          <span className="status-value">{builderStars}</span>
         </div>
         <div className="status-chip">
-          <span className="status-label">Counting Wins</span>
-          <span className="status-value">{countScore}</span>
+          <span className="status-label">Match Stars</span>
+          <span className="status-value">{matchStars}</span>
         </div>
         <div className="status-chip coin">
-          <span className="status-label">Sparkle Stars</span>
+          <span className="status-label">Word Power</span>
           <span className="status-value">{totalStars}</span>
         </div>
       </div>
 
       <div className="mission-card">
         <p className="mission-label">Learning Lab</p>
-        <p className="mission-text">Explore shapes and numbers with gentle mini-games perfect for kindergarten brains.</p>
+        <p className="mission-text">
+          Build and discover cheerful three- and four-letter words. Tap tiles, swap letters, and match clues to earn
+          word power!
+        </p>
       </div>
 
       <div className="lab-grid">
-        <article className="lab-card">
+        <article className="lab-card builder-card">
           <header className="lab-card-header">
             <span className="lab-card-icon" aria-hidden="true">
-              {shapeChallenge.prompt.emoji}
+              {builderState.challenge.card.emoji}
             </span>
             <div>
-              <h2>Shape Garden</h2>
-              <p className="lab-card-sub">{shapeChallenge.prompt.clue}</p>
+              <h2>Word Builder</h2>
+              <p className="lab-card-sub">{builderState.challenge.card.mission}</p>
             </div>
           </header>
-          <div className="option-grid" role="group" aria-label="Shape choices">
-            {shapeChallenge.options.map((option) => (
-              <button
-                key={option}
-                type="button"
-                className="option-button"
-                onClick={() => handleShapePick(option)}
-                aria-pressed={shapeLocked && option === shapeChallenge.prompt.label}
-              >
-                {option}
-              </button>
+
+          <div className="word-slots" role="status" aria-live="polite">
+            {builderState.slots.map((slot, index) => (
+              <span key={`slot-${index}`} className={`word-slot ${slot ? 'filled' : ''}`}>
+                {slot || '_'}
+              </span>
             ))}
           </div>
-          <p className="lab-feedback">{shapeMessage}</p>
+
+          <div className="tile-grid" role="group" aria-label="Letter tiles">
+            {builderState.challenge.options.map((option, index) => {
+              const used = builderState.placement.includes(index)
+              return (
+                <button
+                  key={`${option}-${index}`}
+                  type="button"
+                  className={`tile-button ${used ? 'used' : ''}`}
+                  onClick={() => handleLetterPick(option, index)}
+                  aria-pressed={used}
+                  disabled={builderLocked}
+                >
+                  {option}
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="builder-actions">
+            <button className="mini-btn" type="button" onClick={handleUndo} disabled={builderLocked}>
+              ⬅️ Undo
+            </button>
+            <button className="mini-btn" type="button" onClick={shuffleBuilderTiles}>
+              🔁 Shuffle
+            </button>
+            <button className="mini-btn" type="button" onClick={skipBuilderWord}>
+              🌈 New Word
+            </button>
+          </div>
+
+          <p className="lab-feedback">{builderMessage}</p>
         </article>
 
-        <article className="lab-card">
+        <article className="lab-card match-card">
           <header className="lab-card-header">
             <span className="lab-card-icon" aria-hidden="true">
-              {countChallenge.prompt.emoji}
+              {matchChallenge.answer.emoji}
             </span>
             <div>
-              <h2>Counting Parade</h2>
-              <p className="lab-card-sub">{countChallenge.prompt.prompt}</p>
+              <h2>Word Match Hunt</h2>
+              <p className="lab-card-sub">{matchChallenge.answer.mission}</p>
             </div>
           </header>
-          <p className="lab-helper">{countChallenge.prompt.helper}</p>
-          <div className="option-grid" role="group" aria-label="Number choices">
-            {countChallenge.options.map((option) => (
+          <p className="lab-helper">Tap the correct word to help Abhi pack his reading backpack.</p>
+
+          <div className="match-grid" role="group" aria-label="Word cards">
+            {matchChallenge.options.map((option) => (
               <button
-                key={option}
+                key={option.word}
                 type="button"
-                className="option-button"
-                onClick={() => handleCountPick(option)}
-                aria-pressed={countLocked && option === countChallenge.prompt.answer}
+                className="match-option"
+                onClick={() => handleMatchPick(option)}
+                disabled={matchLocked}
               >
-                {option}
+                <span className="match-emoji" aria-hidden="true">
+                  {option.emoji}
+                </span>
+                <span className="match-word">{option.word.toUpperCase()}</span>
               </button>
             ))}
           </div>
-          <p className="lab-feedback">{countMessage}</p>
+
+          <p className="lab-feedback">{matchMessage}</p>
         </article>
       </div>
 
       <div className="kid-showcase">
         <div className="kid-photo-frame" aria-hidden="true">
-          <img src={ABHI_PHOTO_SRC} className="kid-photo" alt="Abhi cheering" />
+          <img src={ABHI_PHOTO_SRC} className="kid-photo" alt="Abhi cheering in the lab" />
         </div>
         <div>
-          <span className="kid-badge">Lab Coach</span>
+          <span className="kid-badge">Word Coach</span>
           <p className="kid-quote">
-            Abhi says, “Shapes, numbers, and smiles! Keep tapping to grow your super skills.”
+            Abhi whispers, “Every tiny word is a big win! Keep tapping letters, swapping cards, and cheering for your
+            brain.”
           </p>
         </div>
       </div>
     </div>
   )
-};
+}
