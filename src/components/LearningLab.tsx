@@ -76,7 +76,7 @@ const createCountChallenge = (): CountChallenge => {
 
 const ABHI_PHOTO_SRC = `${BASE_URL}Abhi.jpg`
 
-export function LearningLab() {
+export const LearningLab = () => {
   const [shapeChallenge, setShapeChallenge] = useState<ShapeChallenge>(() => createShapeChallenge())
   const [countChallenge, setCountChallenge] = useState<CountChallenge>(() => createCountChallenge())
   const [shapeMessage, setShapeMessage] = useState(DEFAULT_SHAPE_MESSAGE)
@@ -226,4 +226,4 @@ export function LearningLab() {
       </div>
     </div>
   )
-}
+};

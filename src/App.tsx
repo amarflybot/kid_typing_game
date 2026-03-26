@@ -13,7 +13,7 @@ const tabs: Tab[] = [
   { id: 'lab', label: 'Learning Lab' },
 ]
 
-function App() {
+const App = () => {
   const [activeTab, setActiveTab] = useState<TabId>('ladder')
 
   return (
@@ -48,6 +48,6 @@ function App() {
       </div>
     </div>
   )
-}
+};
 
 export default App

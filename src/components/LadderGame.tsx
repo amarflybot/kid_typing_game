@@ -114,7 +114,7 @@ const getHeartUpdates = (prev: LadderGameState, nextRung: number): Partial<Ladde
   return null
 }
 
-export function LadderGame() {
+export const LadderGame = () => {
   const [state, setState] = useState<LadderGameState>(() => createInitialState())
   const wordInputRef = useRef<HTMLInputElement>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
@@ -413,4 +413,4 @@ export function LadderGame() {
       )}
     </div>
   )
-}
+};

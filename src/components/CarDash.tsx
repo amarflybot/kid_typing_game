@@ -81,7 +81,7 @@ const getCarPosition = (lap: number) => {
   return trackStart + progress * (trackEnd - trackStart)
 }
 
-export function CarDash() {
+export const CarDash = () => {
   const [state, setState] = useState<CarDashState>(() => createInitialState())
   const wordInputRef = useRef<HTMLInputElement>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
@@ -327,4 +327,4 @@ export function CarDash() {
       )}
     </div>
   )
-}
+};
