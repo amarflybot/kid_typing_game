@@ -26,7 +26,7 @@ const App = () => {
       <div className="main-card">
         <h1>🦸 Abhimanyu Typing Adventure</h1>
         <p className="instructions">
-          Type to make Abhimanyu climb, zoom the race car, or explore brand-new tile-building word quests! ✨
+          Type to make Abhimanyu climb, zoom the race car, or explore brand-new tile-building word quests!✨✨
         </p>
 
         <div className="tab-bar">
