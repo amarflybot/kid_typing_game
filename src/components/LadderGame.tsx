@@ -221,17 +221,13 @@ export const LadderGame = () => {
 
   const handleWrong = useCallback(() => {
     playWrongNotes(audioCtxRef)
-    let shouldRefill = false
-    setState((prev) => {
-      const nextLives = Math.max(0, prev.lives - 1)
-      shouldRefill = nextLives === 0
-      return {
-        ...prev,
-        feedback: 'Oops! Try again 💪',
-        lives: nextLives,
-      }
-    })
-    if (shouldRefill) {
+    const nextLives = Math.max(0, state.lives - 1)
+    setState((prev) => ({
+      ...prev,
+      feedback: 'Oops! Try again 💪',
+      lives: nextLives,
+    }))
+    if (nextLives === 0) {
       if (refillTimeoutRef.current) {
         window.clearTimeout(refillTimeoutRef.current)
       }
@@ -240,7 +236,7 @@ export const LadderGame = () => {
         refillTimeoutRef.current = null
       }, 600)
     }
-  }, [])
+  }, [audioCtxRef, state.lives])
 
   const isGameComplete = state.winState || state.currentRung >= LADDER_RUNGS
 
@@ -299,7 +295,7 @@ export const LadderGame = () => {
         </div>
         <div className="status-chip hearts">
           <span className="status-label">Hearts</span>
-          <span className="hearts-row">
+          <span className="hearts-row" aria-label="Hearts status">
             {Array.from({ length: maxLives }).map((_, idx) => (
               <span key={`heart-${idx}`} className="heart">
                 {idx < lives ? '❤️' : '🤍'}

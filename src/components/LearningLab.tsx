@@ -103,19 +103,22 @@ export function LearningLab() {
     (letter: string, optionIndex: number) => {
       if (builderLocked) return
       if (builderState.placement.includes(optionIndex)) return
-      let builtWord = ''
-      let filled = false
-      setBuilderState((prev) => {
-        const slotIndex = prev.placement.findIndex((idx) => idx === null)
-        if (slotIndex === -1) return prev
-        const nextSlots = [...prev.slots]
-        const nextPlacement = [...prev.placement]
-        nextSlots[slotIndex] = letter
-        nextPlacement[slotIndex] = optionIndex
-        builtWord = nextSlots.join('')
-        filled = nextPlacement.every((idx) => idx !== null)
-        return { ...prev, slots: nextSlots, placement: nextPlacement }
-      })
+      const slotIndex = builderState.placement.findIndex((idx) => idx === null)
+      if (slotIndex === -1) return
+
+      const nextSlots = [...builderState.slots]
+      const nextPlacement = [...builderState.placement]
+      nextSlots[slotIndex] = letter
+      nextPlacement[slotIndex] = optionIndex
+      const builtWord = nextSlots.join('')
+      const filled = nextPlacement.every((idx) => idx !== null)
+
+      setBuilderState((prev) => ({
+        ...prev,
+        slots: nextSlots,
+        placement: nextPlacement,
+      }))
+
       if (!filled) {
         setBuilderMessage('Great! Add the next letter.')
         return
@@ -129,7 +132,7 @@ export function LearningLab() {
         setBuilderMessage(TRY_AGAIN_MESSAGE)
       }
     },
-    [builderLocked, builderState.challenge.card.word, builderState.placement, queue, resetBuilder],
+    [builderLocked, builderState, queue, resetBuilder],
   )
 
   const handleUndo = useCallback(() => {
@@ -225,7 +228,11 @@ export function LearningLab() {
 
           <div className="word-slots" role="status" aria-live="polite">
             {builderState.slots.map((slot, index) => (
-              <span key={`slot-${index}`} className={`word-slot ${slot ? 'filled' : ''}`}>
+              <span
+                key={`slot-${index}`}
+                className={`word-slot ${slot ? 'filled' : ''}`}
+                aria-label={`Letter slot ${index + 1}`}
+              >
                 {slot || '_'}
               </span>
             ))}
