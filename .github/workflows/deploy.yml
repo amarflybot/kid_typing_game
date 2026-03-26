@@ -21,10 +21,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '23.11.0'
+          node-version: 2
           cache: 'npm'
-      - name: Update npm CLI
-        run: npm install -g npm@latest
       - name: Install dependencies
         run: npm ci
       - name: Build site
