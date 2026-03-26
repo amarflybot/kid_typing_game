@@ -1,4 +1,4 @@
-import { Component, createRef, type KeyboardEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { WORDS, WORD_LOOKUP, type Word } from '../data/wordCards'
 import { BASE_URL } from '../utils/baseUrl'
 
@@ -89,328 +89,328 @@ const createWordPicker = () => {
   }
 }
 
-export class LadderGame extends Component<Record<string, never>, LadderGameState> {
-  private readonly wordInputRef = createRef<HTMLInputElement>()
-  private readonly audioCtxRef: AudioContextRef = { current: null }
-  private readonly pickWord = createWordPicker()
-  private nextWordTimeout: number | null = null
-  private refillTimeout: number | null = null
-  private progressColorTimeout: number | null = null
+const createInitialState = (): LadderGameState => ({
+  currentWord: WORDS[0] ?? FALLBACK_WORD,
+  currentRung: 0,
+  score: 0,
+  level: 1,
+  maxLives: BASE_LIVES,
+  lives: BASE_LIVES,
+  feedback: '',
+  winState: false,
+  mission: 'Get ready to type!',
+  progressColor: '#6c757d',
+})
 
-  state: LadderGameState = {
-    currentWord: WORDS[0] ?? FALLBACK_WORD,
-    currentRung: 0,
-    score: 0,
-    level: 1,
-    maxLives: BASE_LIVES,
-    lives: BASE_LIVES,
-    feedback: '',
-    winState: false,
-    mission: 'Get ready to type!',
-    progressColor: '#6c757d',
-  }
-
-  componentDidMount(): void {
-    this.setNewWord()
-  }
-
-  componentWillUnmount(): void {
-    this.clearTimers()
-  }
-
-  private clearTimers = () => {
-    if (this.nextWordTimeout) {
-      window.clearTimeout(this.nextWordTimeout)
-      this.nextWordTimeout = null
-    }
-    if (this.refillTimeout) {
-      window.clearTimeout(this.refillTimeout)
-      this.refillTimeout = null
-    }
-    if (this.progressColorTimeout) {
-      window.clearTimeout(this.progressColorTimeout)
-      this.progressColorTimeout = null
+const getHeartUpdates = (prev: LadderGameState, nextRung: number): Partial<LadderGameState> | null => {
+  const targetMax = Math.min(HEART_CAP, BASE_LIVES + Math.floor(nextRung / 2))
+  if (targetMax > prev.maxLives) {
+    const gained = targetMax - prev.maxLives
+    return {
+      maxLives: targetMax,
+      lives: Math.min(prev.lives + gained, targetMax),
     }
   }
+  return null
+}
 
-  private focusInput = () => {
-    requestAnimationFrame(() => this.wordInputRef.current?.focus())
-  }
+export function LadderGame() {
+  const [state, setState] = useState<LadderGameState>(() => createInitialState())
+  const wordInputRef = useRef<HTMLInputElement>(null)
+  const audioCtxRef = useRef<AudioContext | null>(null)
+  const pickWordRef = useRef(createWordPicker())
+  const nextWordTimeoutRef = useRef<number | null>(null)
+  const refillTimeoutRef = useRef<number | null>(null)
+  const progressColorTimeoutRef = useRef<number | null>(null)
 
-  private setNewWord = () => {
-    const newWord = this.pickWord()
+  const focusInput = useCallback(() => {
+    requestAnimationFrame(() => wordInputRef.current?.focus())
+  }, [])
+
+  const clearTimers = useCallback(() => {
+    if (nextWordTimeoutRef.current) {
+      window.clearTimeout(nextWordTimeoutRef.current)
+      nextWordTimeoutRef.current = null
+    }
+    if (refillTimeoutRef.current) {
+      window.clearTimeout(refillTimeoutRef.current)
+      refillTimeoutRef.current = null
+    }
+    if (progressColorTimeoutRef.current) {
+      window.clearTimeout(progressColorTimeoutRef.current)
+      progressColorTimeoutRef.current = null
+    }
+  }, [])
+
+  const setNewWord = useCallback(() => {
+    const newWord = pickWordRef.current()
     const card = WORD_LOOKUP[newWord]
-    this.setState(
-      {
-        currentWord: newWord,
-        mission: card?.mission ?? `Type ${newWord.toUpperCase()}!`,
-      },
-      this.focusInput,
-    )
-  }
+    setState((prev) => ({
+      ...prev,
+      currentWord: newWord,
+      mission: card?.mission ?? `Type ${newWord.toUpperCase()}!`,
+    }))
+    focusInput()
+  }, [focusInput])
 
-  private drawProgressColor = () => {
-    this.setState({ progressColor: '#27ae60' })
-    this.progressColorTimeout && window.clearTimeout(this.progressColorTimeout)
-    this.progressColorTimeout = window.setTimeout(() => {
-      this.setState({ progressColor: '#6c757d' })
-      this.progressColorTimeout = null
+  const drawProgressColor = useCallback(() => {
+    setState((prev) => ({ ...prev, progressColor: '#27ae60' }))
+    if (progressColorTimeoutRef.current) {
+      window.clearTimeout(progressColorTimeoutRef.current)
+    }
+    progressColorTimeoutRef.current = window.setTimeout(() => {
+      setState((prev) => ({ ...prev, progressColor: '#6c757d' }))
+      progressColorTimeoutRef.current = null
     }, 800)
-  }
+  }, [])
 
-  private getHeartUpdates = (prev: LadderGameState, nextRung: number): Partial<LadderGameState> | null => {
-    const targetMax = Math.min(HEART_CAP, BASE_LIVES + Math.floor(nextRung / 2))
-    if (targetMax > prev.maxLives) {
-      const gained = targetMax - prev.maxLives
-      return {
-        maxLives: targetMax,
-        lives: Math.min(prev.lives + gained, targetMax),
-      }
+  const scheduleNewWord = useCallback(() => {
+    if (nextWordTimeoutRef.current) {
+      window.clearTimeout(nextWordTimeoutRef.current)
     }
-    return null
-  }
-
-  private scheduleNewWord = () => {
-    this.nextWordTimeout && window.clearTimeout(this.nextWordTimeout)
-    this.nextWordTimeout = window.setTimeout(() => {
-      this.setNewWord()
-      this.nextWordTimeout = null
+    nextWordTimeoutRef.current = window.setTimeout(() => {
+      setNewWord()
+      nextWordTimeoutRef.current = null
     }, 600)
-  }
+  }, [setNewWord])
 
-  private triggerWinCelebration = () => {
-    playTone(this.audioCtxRef, 1046.5, 0.25)
+  useEffect(() => {
+    setNewWord()
+    return () => {
+      clearTimers()
+    }
+  }, [setNewWord, clearTimers])
+
+  const triggerWinCelebration = useCallback(() => {
+    playTone(audioCtxRef, 1046.5, 0.25)
     createConfetti()
-  }
+  }, [])
 
-  private resetInput = () => {
-    if (this.wordInputRef.current) {
-      this.wordInputRef.current.value = ''
+  const resetInput = useCallback(() => {
+    if (wordInputRef.current) {
+      wordInputRef.current.value = ''
     }
-  }
+  }, [])
 
-  private handleCorrect = () => {
-    celebrate(this.audioCtxRef)
-    this.drawProgressColor()
-    this.setState(
-      (prev) => {
-        const nextRung = prev.currentRung + 1
-        const reachedTop = nextRung >= LADDER_RUNGS
-        const heartUpdates = this.getHeartUpdates(prev, nextRung)
-        const updatedState: Partial<LadderGameState> = {
-          currentRung: nextRung,
-          score: prev.score + POINTS_PER_WORD + (reachedTop ? LEVEL_BONUS : 0),
-          feedback: reachedTop ? '🏆 Abhimanyu reached the top!' : '🎉 Great job! Abhimanyu climbs up!',
-          winState: reachedTop ? true : prev.winState,
-        }
-        if (heartUpdates) Object.assign(updatedState, heartUpdates)
-        return updatedState
-      },
-      () => {
-        if (this.state.winState) {
-          this.triggerWinCelebration()
-        } else {
-          this.scheduleNewWord()
-        }
-      },
-    )
-  }
-
-  private handleWrong = () => {
-    playWrongNotes(this.audioCtxRef)
-    this.setState(
-      (prev) => {
-        const nextLives = Math.max(0, prev.lives - 1)
-        return {
-          feedback: 'Oops! Try again 💪',
-          lives: nextLives,
-        }
-      },
-      () => {
-        if (this.state.lives === 0) {
-          this.refillTimeout && window.clearTimeout(this.refillTimeout)
-          this.refillTimeout = window.setTimeout(() => {
-            this.setState((prev) => ({ lives: prev.maxLives }))
-            this.refillTimeout = null
-          }, 600)
-        }
-      },
-    )
-  }
-
-  private checkWord = (value: string) => {
-    if (this.isGameComplete()) return
-    const typed = value.trim().toLowerCase()
-    if (!typed) return
-    if (typed === this.state.currentWord) {
-      this.resetInput()
-      this.handleCorrect()
+  const handleCorrect = useCallback(() => {
+    celebrate(audioCtxRef)
+    drawProgressColor()
+    let reachedTop = false
+    setState((prev) => {
+      const nextRung = prev.currentRung + 1
+      reachedTop = nextRung >= LADDER_RUNGS
+      const heartUpdates = getHeartUpdates(prev, nextRung)
+      const updatedState: LadderGameState = {
+        ...prev,
+        currentRung: nextRung,
+        score: prev.score + POINTS_PER_WORD + (reachedTop ? LEVEL_BONUS : 0),
+        feedback: reachedTop ? '🏆 Abhimanyu reached the top!' : '🎉 Great job! Abhimanyu climbs up!',
+        winState: reachedTop ? true : prev.winState,
+      }
+      if (heartUpdates) {
+        Object.assign(updatedState, heartUpdates)
+      }
+      return updatedState
+    })
+    if (reachedTop) {
+      triggerWinCelebration()
     } else {
-      this.resetInput()
-      this.handleWrong()
+      scheduleNewWord()
     }
-  }
+  }, [drawProgressColor, scheduleNewWord, triggerWinCelebration])
 
-  private restart = (nextLevel = false) => {
-    this.clearTimers()
-    this.setState(
-      (prev) => ({
-        currentRung: 0,
-        winState: false,
-        feedback: '',
-        progressColor: '#6c757d',
+  const handleWrong = useCallback(() => {
+    playWrongNotes(audioCtxRef)
+    let shouldRefill = false
+    setState((prev) => {
+      const nextLives = Math.max(0, prev.lives - 1)
+      shouldRefill = nextLives === 0
+      return {
+        ...prev,
+        feedback: 'Oops! Try again 💪',
+        lives: nextLives,
+      }
+    })
+    if (shouldRefill) {
+      if (refillTimeoutRef.current) {
+        window.clearTimeout(refillTimeoutRef.current)
+      }
+      refillTimeoutRef.current = window.setTimeout(() => {
+        setState((prev) => ({ ...prev, lives: prev.maxLives }))
+        refillTimeoutRef.current = null
+      }, 600)
+    }
+  }, [])
+
+  const isGameComplete = state.winState || state.currentRung >= LADDER_RUNGS
+
+  const checkWord = useCallback(
+    (value: string) => {
+      if (isGameComplete) return
+      const typed = value.trim().toLowerCase()
+      if (!typed) return
+      if (typed === state.currentWord) {
+        resetInput()
+        handleCorrect()
+      } else {
+        resetInput()
+        handleWrong()
+      }
+    },
+    [handleCorrect, handleWrong, isGameComplete, resetInput, state.currentWord],
+  )
+
+  const restart = useCallback(
+    (nextLevel = false) => {
+      clearTimers()
+      setState((prev) => ({
+        ...createInitialState(),
         level: nextLevel ? prev.level + 1 : 1,
         score: nextLevel ? prev.score : 0,
-        maxLives: BASE_LIVES,
-        lives: BASE_LIVES,
-      }),
-      this.setNewWord,
-    )
-  }
+      }))
+      setNewWord()
+    },
+    [clearTimers, setNewWord],
+  )
 
-  private isGameComplete = () => this.state.winState || this.state.currentRung >= LADDER_RUNGS
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Enter') {
+        checkWord(event.currentTarget.value)
+      } else if (event.key.length === 1 && !event.metaKey && !event.ctrlKey && !isGameComplete) {
+        playTone(audioCtxRef, 329.63)
+      }
+    },
+    [checkWord, isGameComplete],
+  )
 
-  private handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      this.checkWord(event.currentTarget.value)
-    } else if (event.key.length === 1 && !event.metaKey && !event.ctrlKey && !this.isGameComplete()) {
-      playTone(this.audioCtxRef, 329.63)
-    }
-  }
+  const { level, score, maxLives, lives, mission, currentWord, feedback, progressColor, currentRung, winState } = state
 
-  render() {
-    const { level, score, maxLives, lives, mission, currentWord, feedback, progressColor, currentRung, winState } =
-      this.state
-    const isGameComplete = this.isGameComplete()
-    return (
-      <div className="ladder-wrapper">
-        <div className="status-bar">
-          <div className="status-chip">
-            <span className="status-label">Level</span>
-            <span className="status-value">{level}</span>
-          </div>
-          <div className="status-chip coin">
-            <span className="status-label">Coins</span>
-            <span className="status-value">{score}</span>
-          </div>
-          <div className="status-chip hearts">
-            <span className="status-label">Hearts</span>
-            <span className="hearts-row">
-              {Array.from({ length: maxLives }).map((_, idx) => (
-                <span key={`heart-${idx}`} className="heart">
-                  {idx < lives ? '❤️' : '🤍'}
-                </span>
-              ))}
-            </span>
-          </div>
+  return (
+    <div className="ladder-wrapper">
+      <div className="status-bar">
+        <div className="status-chip">
+          <span className="status-label">Level</span>
+          <span className="status-value">{level}</span>
         </div>
-
-        <div className="mission-card">
-          <p className="mission-label">Mission</p>
-          <p className="mission-text">{mission}</p>
+        <div className="status-chip coin">
+          <span className="status-label">Coins</span>
+          <span className="status-value">{score}</span>
         </div>
-
-        <div className="game-layout">
-          <div className="game-column left">
-            <div className="kid-showcase">
-              <div className="kid-photo-frame">
-                <img src={ASHU_PHOTO_SRC} alt="Excited kid" className="kid-photo" />
-                <span className="kid-badge">Let's go!</span>
-              </div>
-              <div className="kid-quote">
-                I'm fired up to climb this ladder!
-                <span>Type fast with me 💥</span>
-              </div>
-            </div>
-            <div className="interaction-panel">
-              <div className="action-buttons">
-                <button className="action-btn" type="button" onClick={() => playTone(this.audioCtxRef, 261.63)}>
-                  🔊 Hear Word
-                </button>
-                <button className="action-btn" type="button" onClick={() => this.setState({ feedback: 'You got this! 💪' })}>
-                  🎉 Kid Cheer
-                </button>
-              </div>
-              <p className="cheer-text">Tap a button for help or cheer!</p>
-            </div>
-          </div>
-
-          <div className="game-column center">
-            <div className="word-card">
-              <div
-                className="word-picture"
-                style={{
-                  background: `linear-gradient(145deg, ${WORD_LOOKUP[currentWord]?.colors?.[0] ?? '#fff9e6'}, ${WORD_LOOKUP[currentWord]?.colors?.[1] ?? '#ffffff'})`,
-                }}
-              >
-                <span className="word-emoji" aria-hidden="true">
-                  {WORD_LOOKUP[currentWord]?.emoji}
-                </span>
-              </div>
-              <p className="word-label">{WORD_LOOKUP[currentWord]?.label}</p>
-              <div className="word-bubble">
-                <p className="word-display">{currentWord.toUpperCase()}</p>
-              </div>
-            </div>
-            <div className="input-stack">
-              <div className="input-wrapper">
-                <input
-                  ref={this.wordInputRef}
-                  type="text"
-                  maxLength={3}
-                  placeholder="???"
-                  disabled={isGameComplete}
-                  aria-disabled={isGameComplete}
-                  onKeyDown={(event) => {
-                    if (!isGameComplete) {
-                      this.handleKeyDown(event)
-                    }
-                  }}
-                />
-              </div>
-              <p className={`feedback ${feedback.includes('Oops') ? 'wrong' : 'correct'}`}>{feedback}</p>
-              <div className="progress-panel">
-                <div className="progress-bar">
-                  {RUNG_STEPS.map((step) => (
-                    <span key={`progress-${step}`} className={`progress-step ${step < currentRung ? 'filled' : ''}`}></span>
-                  ))}
-                </div>
-                <p className="progress-text" style={{ color: progressColor }}>
-                  Ladder: {currentRung} / {LADDER_RUNGS}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="game-column right">
-            <div className="game-area">
-              <span className="flag">🏁</span>
-              <div className="ladder">
-                {Array.from({ length: LADDER_RUNGS + 1 }).map((_, idx) => (
-                  <div key={`rung-${idx}`} className="ladder-rung" style={{ bottom: idx * RUNG_HEIGHT }}></div>
-                ))}
-                <div
-                  className={`mario ${currentRung > 0 ? 'climbing' : ''}`}
-                  style={{ bottom: MARIO_BASE_BOTTOM + currentRung * RUNG_HEIGHT }}
-                >
-                  <img src={ASHU_PHOTO_SRC} alt="Mario" className="mario-avatar" />
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="status-chip hearts">
+          <span className="status-label">Hearts</span>
+          <span className="hearts-row">
+            {Array.from({ length: maxLives }).map((_, idx) => (
+              <span key={`heart-${idx}`} className="heart">
+                {idx < lives ? '❤️' : '🤍'}
+              </span>
+            ))}
+          </span>
         </div>
-
-        {winState && (
-          <div className="win-message show">
-            <p className="trophy">🏆</p>
-            <p className="feedback correct">Abhimanyu reached the top! You're a typing champion! 🌟</p>
-            <p className="feedback win-score">Level {level} complete! +{LEVEL_BONUS} coins</p>
-            <button className="btn" type="button" onClick={() => this.restart(true)}>
-              Next Level 🚀
-            </button>
-          </div>
-        )}
       </div>
-    )
-  }
+
+      <div className="mission-card">
+        <p className="mission-label">Mission</p>
+        <p className="mission-text">{mission}</p>
+      </div>
+
+      <div className="game-layout">
+        <div className="game-column left">
+          <div className="kid-showcase">
+            <div className="kid-photo-frame">
+              <img src={ASHU_PHOTO_SRC} alt="Excited kid" className="kid-photo" />
+              <span className="kid-badge">Let's go!</span>
+            </div>
+            <div className="kid-quote">
+              I'm fired up to climb this ladder!
+              <span>Type fast with me 💥</span>
+            </div>
+          </div>
+          <div className="interaction-panel">
+            <div className="action-buttons">
+              <button className="action-btn" type="button" onClick={() => playTone(audioCtxRef, 261.63)}>
+                🔊 Hear Word
+              </button>
+              <button className="action-btn" type="button" onClick={() => setState((prev) => ({ ...prev, feedback: 'You got this! 💪' }))}>
+                🎉 Kid Cheer
+              </button>
+            </div>
+            <p className="cheer-text">Tap a button for help or cheer!</p>
+          </div>
+        </div>
+
+        <div className="game-column center">
+          <div className="word-card">
+            <div
+              className="word-picture"
+              style={{
+                background: `linear-gradient(145deg, ${WORD_LOOKUP[currentWord]?.colors?.[0] ?? '#fff9e6'}, ${WORD_LOOKUP[currentWord]?.colors?.[1] ?? '#ffffff'})`,
+              }}
+            >
+              <span className="word-emoji" aria-hidden="true">
+                {WORD_LOOKUP[currentWord]?.emoji}
+              </span>
+            </div>
+            <p className="word-label">{WORD_LOOKUP[currentWord]?.label}</p>
+            <div className="word-bubble">
+              <p className="word-display">{currentWord.toUpperCase()}</p>
+            </div>
+          </div>
+          <div className="input-stack">
+            <div className="input-wrapper">
+              <input
+                ref={wordInputRef}
+                type="text"
+                maxLength={3}
+                placeholder="???"
+                disabled={isGameComplete}
+                aria-disabled={isGameComplete}
+                onKeyDown={(event) => {
+                  if (!isGameComplete) {
+                    handleKeyDown(event)
+                  }
+                }}
+              />
+            </div>
+            <p className={`feedback ${feedback.includes('Oops') ? 'wrong' : 'correct'}`}>{feedback}</p>
+            <div className="progress-panel">
+              <div className="progress-bar">
+                {RUNG_STEPS.map((step) => (
+                  <span key={`progress-${step}`} className={`progress-step ${step < currentRung ? 'filled' : ''}`}></span>
+                ))}
+              </div>
+              <p className="progress-text" style={{ color: progressColor }}>
+                Ladder: {currentRung} / {LADDER_RUNGS}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="game-column right">
+          <div className="game-area">
+            <span className="flag">🏁</span>
+            <div className="ladder">
+              {Array.from({ length: LADDER_RUNGS + 1 }).map((_, idx) => (
+                <div key={`rung-${idx}`} className="ladder-rung" style={{ bottom: idx * RUNG_HEIGHT }}></div>
+              ))}
+              <div className={`mario ${currentRung > 0 ? 'climbing' : ''}`} style={{ bottom: MARIO_BASE_BOTTOM + currentRung * RUNG_HEIGHT }}>
+                <img src={ASHU_PHOTO_SRC} alt="Mario" className="mario-avatar" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {winState && (
+        <div className="win-message show">
+          <p className="trophy">🏆</p>
+          <p className="feedback correct">Abhimanyu reached the top! You're a typing champion! 🌟</p>
+          <p className="feedback win-score">Level {level} complete! +{LEVEL_BONUS} coins</p>
+          <button className="btn" type="button" onClick={() => restart(true)}>
+            Next Level 🚀
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }

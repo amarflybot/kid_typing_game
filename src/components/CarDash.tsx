@@ -1,4 +1,4 @@
-import { Component, createRef, type KeyboardEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { CAR_WORDS, CAR_LOOKUP, type CarWord, type CarWordCard } from '../data/carWordCards'
 import { BASE_URL } from '../utils/baseUrl'
 
@@ -64,60 +64,69 @@ const createCarPicker = () => {
   }
 }
 
-export class CarDash extends Component<Record<string, never>, CarDashState> {
-  private readonly wordInputRef = createRef<HTMLInputElement>()
-  private readonly audioCtxRef: AudioContextRef = { current: null }
-  private readonly pickNextWord = createCarPicker()
-  private nextWordTimeout: number | null = null
+const createInitialState = (): CarDashState => ({
+  currentWord: CAR_WORDS[0] ?? FALLBACK_CAR_WORD,
+  lap: 0,
+  boosts: 0,
+  fans: 0,
+  feedback: '',
+  pitMessage: 'Tap a pit button to pump up the race!',
+  raceWon: false,
+})
 
-  override state: CarDashState = {
-    currentWord: CAR_WORDS[0] ?? FALLBACK_CAR_WORD,
-    lap: 0,
-    boosts: 0,
-    fans: 0,
-    feedback: '',
-    pitMessage: 'Tap a pit button to pump up the race!',
-    raceWon: false,
-  }
+const getCarPosition = (lap: number) => {
+  const progress = Math.min(lap, CAR_STEPS) / CAR_STEPS
+  const trackStart = 12
+  const trackEnd = 88
+  return trackStart + progress * (trackEnd - trackStart)
+}
 
-  override componentDidMount(): void {
-    this.setNewWord()
-  }
+export function CarDash() {
+  const [state, setState] = useState<CarDashState>(() => createInitialState())
+  const wordInputRef = useRef<HTMLInputElement>(null)
+  const audioCtxRef = useRef<AudioContext | null>(null)
+  const pickNextWordRef = useRef(createCarPicker())
+  const nextWordTimeoutRef = useRef<number | null>(null)
 
-  override componentWillUnmount(): void {
-    this.clearNextWordTimeout()
-  }
+  const focusInput = useCallback(() => {
+    requestAnimationFrame(() => wordInputRef.current?.focus())
+  }, [])
 
-  private focusInput = () => {
-    requestAnimationFrame(() => this.wordInputRef.current?.focus())
-  }
+  const setNewWord = useCallback(() => {
+    const next = pickNextWordRef.current()
+    setState((prev) => ({ ...prev, currentWord: next }))
+    focusInput()
+  }, [focusInput])
 
-  private setNewWord = () => {
-    const next = this.pickNextWord()
-    this.setState({ currentWord: next }, this.focusInput)
-  }
-
-  private clearNextWordTimeout = () => {
-    if (this.nextWordTimeout) {
-      window.clearTimeout(this.nextWordTimeout)
-      this.nextWordTimeout = null
+  const clearNextWordTimeout = useCallback(() => {
+    if (nextWordTimeoutRef.current) {
+      window.clearTimeout(nextWordTimeoutRef.current)
+      nextWordTimeoutRef.current = null
     }
-  }
+  }, [])
 
-  private queueNextWord = () => {
-    this.clearNextWordTimeout()
-    this.nextWordTimeout = window.setTimeout(() => {
-      this.setNewWord()
-      this.nextWordTimeout = null
+  const queueNextWord = useCallback(() => {
+    clearNextWordTimeout()
+    nextWordTimeoutRef.current = window.setTimeout(() => {
+      setNewWord()
+      nextWordTimeoutRef.current = null
     }, 400)
-  }
+  }, [clearNextWordTimeout, setNewWord])
 
-  private updatePitMessage = (message: string) => {
-    this.setState({ pitMessage: message })
-  }
+  const updatePitMessage = useCallback((message: string) => {
+    setState((prev) => ({ ...prev, pitMessage: message }))
+  }, [])
 
-  private handleBoost = () => {
-    this.setState((prev) => ({
+  useEffect(() => {
+    setNewWord()
+    return () => {
+      clearNextWordTimeout()
+    }
+  }, [setNewWord, clearNextWordTimeout])
+
+  const handleBoost = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
       boosts: Math.min(9, prev.boosts + 1),
       fans: Math.min(99, prev.fans + 1),
     }))
@@ -129,201 +138,193 @@ export class CarDash extends Component<Record<string, never>, CarDashState> {
       speedLines?.classList.remove('show')
       carEl?.classList.remove('boost')
     }, 600)
-  }
+  }, [])
 
-  private handlePenalty = () => {
-    this.setState((prev) => ({
+  const handlePenalty = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
       boosts: Math.max(0, prev.boosts - 1),
     }))
-  }
+  }, [])
 
-  private handleCorrect = () => {
-    playTone(this.audioCtxRef, 523.25)
-    this.setState(
-      (prev) => {
-        const nextLap = prev.lap + 1
-        const raceWon = nextLap >= CAR_STEPS
-        return {
-          lap: nextLap,
-          raceWon,
-          feedback: raceWon ? '🏁 Hot wheels! You finished the race!' : 'Vroom! Keep racing!',
-          pitMessage: raceWon ? '🏆 Victory lap! Grab another race!' : prev.pitMessage,
-        }
-      },
-      () => {
-        if (this.state.raceWon) {
-          this.clearNextWordTimeout()
-        } else {
-          this.queueNextWord()
-          const cheer = CAR_CHEERS[Math.floor(Math.random() * CAR_CHEERS.length)]
-          this.updatePitMessage(cheer.message)
-        }
-      },
-    )
-    this.handleBoost()
-  }
-
-  private resetInput = () => {
-    if (this.wordInputRef.current) {
-      this.wordInputRef.current.value = ''
+  const resetInput = useCallback(() => {
+    if (wordInputRef.current) {
+      wordInputRef.current.value = ''
     }
-  }
+  }, [])
 
-  private handleWrong = () => {
-    playTone(this.audioCtxRef, 190, 0.2)
-    this.setState({ feedback: 'Slow down! Try again.' })
-    this.resetInput()
-    this.handlePenalty()
-    this.updatePitMessage('Pit crew says: try again carefully!')
-  }
+  const isRaceComplete = state.raceWon || state.lap >= CAR_STEPS
 
-  private checkWord = (value: string) => {
-    if (this.isRaceComplete()) return
-    const typed = value.trim().toLowerCase()
-    if (!typed) return
-    if (typed === this.state.currentWord) {
-      this.resetInput()
-      this.handleCorrect()
-    } else {
-      this.handleWrong()
-    }
-  }
-
-  private restartRace = () => {
-    this.setState({
-      lap: 0,
-      boosts: 0,
-      fans: 0,
-      raceWon: false,
-      feedback: '',
-      pitMessage: 'Tap a pit button to pump up the race!',
+  const handleCorrect = useCallback(() => {
+    playTone(audioCtxRef, 523.25)
+    let raceFinished = false
+    setState((prev) => {
+      const nextLap = prev.lap + 1
+      raceFinished = nextLap >= CAR_STEPS
+      return {
+        ...prev,
+        lap: nextLap,
+        raceWon: raceFinished,
+        feedback: raceFinished ? '🏁 Hot wheels! You finished the race!' : 'Vroom! Keep racing!',
+        pitMessage: raceFinished ? '🏆 Victory lap! Grab another race!' : prev.pitMessage,
+      }
     })
-    this.clearNextWordTimeout()
-    this.setNewWord()
+    if (raceFinished) {
+      clearNextWordTimeout()
+    } else {
+      queueNextWord()
+      const cheer = CAR_CHEERS[Math.floor(Math.random() * CAR_CHEERS.length)]
+      updatePitMessage(cheer.message)
+    }
+    handleBoost()
+  }, [clearNextWordTimeout, handleBoost, queueNextWord, updatePitMessage])
+
+  const handleWrong = useCallback(() => {
+    playTone(audioCtxRef, 190, 0.2)
+    setState((prev) => ({ ...prev, feedback: 'Slow down! Try again.' }))
+    resetInput()
+    handlePenalty()
+    updatePitMessage('Pit crew says: try again carefully!')
+  }, [handlePenalty, resetInput, updatePitMessage])
+
+  const checkWord = useCallback(
+    (value: string) => {
+      if (isRaceComplete) return
+      const typed = value.trim().toLowerCase()
+      if (!typed) return
+      if (typed === state.currentWord) {
+        resetInput()
+        handleCorrect()
+      } else {
+        handleWrong()
+      }
+    },
+    [handleCorrect, handleWrong, isRaceComplete, resetInput, state.currentWord],
+  )
+
+  const restartRace = useCallback(() => {
+    setState((prev) => ({
+      ...createInitialState(),
+      currentWord: prev.currentWord,
+    }))
+    clearNextWordTimeout()
+    setNewWord()
     const speedLines = document.getElementById('speedLines')
+    const carEl = document.getElementById('raceCar')
     speedLines?.classList.remove('show')
-  }
+    carEl?.classList.remove('boost')
+  }, [clearNextWordTimeout, setNewWord])
 
-  private isRaceComplete = () => this.state.raceWon || this.state.lap >= CAR_STEPS
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      if (isRaceComplete) return
+      if (event.key === 'Enter') {
+        checkWord(event.currentTarget.value)
+      } else if (event.key.length === 1 && !event.metaKey && !event.ctrlKey) {
+        playTone(audioCtxRef, 330)
+      }
+    },
+    [checkWord, isRaceComplete],
+  )
 
-  private getCarPosition = () => {
-    const progress = Math.min(this.state.lap, CAR_STEPS) / CAR_STEPS
-    const trackStart = 12
-    const trackEnd = 88
-    return trackStart + progress * (trackEnd - trackStart)
-  }
+  const { currentWord, lap, boosts, fans, feedback, pitMessage, raceWon } = state
+  const carCard: CarWordCard | undefined = CAR_LOOKUP[currentWord]
+  const carPosition = getCarPosition(lap)
 
-  private handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (this.isRaceComplete()) return
-    if (event.key === 'Enter') {
-      this.checkWord(event.currentTarget.value)
-      return
-    }
-    if (event.key.length === 1 && !event.metaKey && !event.ctrlKey) {
-      playTone(this.audioCtxRef, 330)
-    }
-  }
-
-  override render() {
-    const { currentWord, lap, boosts, fans, feedback, pitMessage, raceWon } = this.state
-    const isRaceComplete = this.isRaceComplete()
-    const carCard: CarWordCard | undefined = CAR_LOOKUP[currentWord]
-    const carPosition = this.getCarPosition()
-    return (
-      <div className="car-panel">
-        <div className="car-area">
-          <span className="car-flag">🏁</span>
-          <div className="car-track"></div>
-          <div className="speed-lines" id="speedLines"></div>
-          <div className="race-car" id="raceCar" style={{ left: `${carPosition}%` }}>
-            <span>{'🏎️'}</span>
-          </div>
+  return (
+    <div className="car-panel">
+      <div className="car-area">
+        <span className="car-flag">🏁</span>
+        <div className="car-track"></div>
+        <div className="speed-lines" id="speedLines"></div>
+        <div className="race-car" id="raceCar" style={{ left: `${carPosition}%` }}>
+          <span>🏎️</span>
         </div>
+      </div>
 
-        <div className="car-photo-card">
-          <img src={ABHI_PHOTO_SRC} alt="Smiling racer ready to zoom" />
-          <p className="car-photo-text">Captain Zoom is ready! Type fast to fuel the race. 🏎️⚡</p>
+      <div className="car-photo-card">
+        <img src={ABHI_PHOTO_SRC} alt="Smiling racer ready to zoom" />
+        <p className="car-photo-text">Captain Zoom is ready! Type fast to fuel the race. 🏎️⚡</p>
+      </div>
+
+      <div className="car-status-bar">
+        <div className="car-chip">
+          <span className="car-chip-label">Lap</span>
+          <span className="car-chip-value">
+            {Math.min(lap, CAR_STEPS)} / {CAR_STEPS}
+          </span>
         </div>
-
-        <div className="car-status-bar">
-          <div className="car-chip">
-            <span className="car-chip-label">Lap</span>
-            <span className="car-chip-value">
-              {Math.min(lap, CAR_STEPS)} / {CAR_STEPS}
-            </span>
-          </div>
-          <div className="car-chip">
-            <span className="car-chip-label">Boost</span>
-            <span className="car-chip-value">{boosts}</span>
-          </div>
-          <div className="car-chip">
-            <span className="car-chip-label">Fans</span>
-            <span className="car-chip-value">{fans}</span>
-          </div>
+        <div className="car-chip">
+          <span className="car-chip-label">Boost</span>
+          <span className="car-chip-value">{boosts}</span>
         </div>
-
-        <div
-          className="car-word-card"
-          style={{
-            background: `linear-gradient(145deg, ${carCard?.colors?.[0] ?? '#fff'}, ${carCard?.colors?.[1] ?? '#fff'})`,
-          }}
-        >
-          <div className="car-word-icon" aria-hidden="true">
-            {carCard?.emoji ?? '🏎️'}
-          </div>
-          <div className="car-word-info">
-            <p className="car-mission">{carCard?.mission}</p>
-            <p className="car-word">{currentWord.toUpperCase()}</p>
-          </div>
+        <div className="car-chip">
+          <span className="car-chip-label">Fans</span>
+          <span className="car-chip-value">{fans}</span>
         </div>
+      </div>
 
-        <div className="pit-panel">
-          <div className="pit-buttons">
-            <button className="pit-btn" type="button" onClick={() => playTone(this.audioCtxRef, 440)}>
-              🔊 Honk Word
-            </button>
-            <button
-              className="pit-btn"
-              type="button"
-              onClick={() => this.updatePitMessage(CAR_CHEERS[Math.floor(Math.random() * CAR_CHEERS.length)].message)}
-            >
-              🎉 Pit Cheer
-            </button>
-          </div>
-          <p className="pit-text">{pitMessage}</p>
+      <div
+        className="car-word-card"
+        style={{
+          background: `linear-gradient(145deg, ${carCard?.colors?.[0] ?? '#fff'}, ${carCard?.colors?.[1] ?? '#fff'})`,
+        }}
+      >
+        <div className="car-word-icon" aria-hidden="true">
+          {carCard?.emoji ?? '🏎️'}
         </div>
+        <div className="car-word-info">
+          <p className="car-mission">{carCard?.mission}</p>
+          <p className="car-word">{currentWord.toUpperCase()}</p>
+        </div>
+      </div>
 
-        <div className="car-input-stack">
-          <input
-            type="text"
-            maxLength={3}
-            ref={this.wordInputRef}
-            placeholder={currentWord}
-            disabled={isRaceComplete}
-            aria-disabled={isRaceComplete}
-            onKeyDown={this.handleKeyDown}
-          />
-          <p className="car-feedback">{feedback}</p>
-          <div className="car-progress">
-            <div className="car-progress-bar" style={{ width: `${(Math.min(lap, CAR_STEPS) / CAR_STEPS) * 100}%` }}></div>
-          </div>
-          <p className="car-progress-text">
-            Lap: {Math.min(lap, CAR_STEPS)} / {CAR_STEPS}
-          </p>
-          <button className="btn car-btn" type="button" onClick={this.restartRace}>
-            {raceWon ? 'Race Again' : 'Start New Race'}
+      <div className="pit-panel">
+        <div className="pit-buttons">
+          <button className="pit-btn" type="button" onClick={() => playTone(audioCtxRef, 440)}>
+            🔊 Honk Word
+          </button>
+          <button
+            className="pit-btn"
+            type="button"
+            onClick={() => updatePitMessage(CAR_CHEERS[Math.floor(Math.random() * CAR_CHEERS.length)].message)}
+          >
+            🎉 Pit Cheer
           </button>
         </div>
-
-        {raceWon && (
-          <div className="car-win show">
-            <p>🏆 Vroom! You won the race!</p>
-            <button className="btn" type="button" onClick={this.restartRace}>
-              Play Again
-            </button>
-          </div>
-        )}
+        <p className="pit-text">{pitMessage}</p>
       </div>
-    )
-  }
+
+      <div className="car-input-stack">
+        <input
+          type="text"
+          maxLength={3}
+          ref={wordInputRef}
+          placeholder={currentWord}
+          disabled={isRaceComplete}
+          aria-disabled={isRaceComplete}
+          onKeyDown={handleKeyDown}
+        />
+        <p className="car-feedback">{feedback}</p>
+        <div className="car-progress">
+          <div className="car-progress-bar" style={{ width: `${(Math.min(lap, CAR_STEPS) / CAR_STEPS) * 100}%` }}></div>
+        </div>
+        <p className="car-progress-text">
+          Lap: {Math.min(lap, CAR_STEPS)} / {CAR_STEPS}
+        </p>
+        <button className="btn car-btn" type="button" onClick={restartRace}>
+          {raceWon ? 'Race Again' : 'Start New Race'}
+        </button>
+      </div>
+
+      {raceWon && (
+        <div className="car-win show">
+          <p>🏆 Vroom! You won the race!</p>
+          <button className="btn" type="button" onClick={restartRace}>
+            Play Again
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }
