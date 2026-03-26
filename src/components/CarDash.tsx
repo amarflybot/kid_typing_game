@@ -2,6 +2,7 @@ import { type MutableRefObject, useCallback, useEffect, useMemo, useRef, useStat
 import { CAR_WORDS, CAR_LOOKUP, type CarWord, type CarWordCard } from '../data/carWordCards'
 
 const CAR_STEPS = 6
+const ABHI_PHOTO_SRC = `${import.meta.env.BASE_URL}Abhi.jpg`
 
 type AudioContextRef = MutableRefObject<AudioContext | null>
 
@@ -201,7 +202,7 @@ export const CarDash = () => {
       </div>
 
       <div className="car-photo-card">
-        <img src="/Abhi.jpg" alt="Smiling racer ready to zoom" />
+        <img src={ABHI_PHOTO_SRC} alt="Smiling racer ready to zoom" />
         <p className="car-photo-text">Captain Zoom is ready! Type fast to fuel the race. 🏎️⚡</p>
       </div>
 

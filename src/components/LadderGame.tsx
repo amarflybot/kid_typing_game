@@ -8,6 +8,7 @@ const BASE_LIVES = 3
 const HEART_CAP = 6
 const POINTS_PER_WORD = 10
 const LEVEL_BONUS = 20
+const ASHU_PHOTO_SRC = `${import.meta.env.BASE_URL}Ashu.jpg`
 
 type AudioContextRef = MutableRefObject<AudioContext | null>
 
@@ -237,7 +238,7 @@ export const LadderGame = () => {
         <div className="game-column left">
           <div className="kid-showcase">
             <div className="kid-photo-frame">
-              <img src="/Ashu.jpg" alt="Excited kid" className="kid-photo" />
+              <img src={ASHU_PHOTO_SRC} alt="Excited kid" className="kid-photo" />
               <span className="kid-badge">Let's go!</span>
             </div>
             <div className="kid-quote">
@@ -318,7 +319,7 @@ export const LadderGame = () => {
                 className={`mario ${currentRung > 0 ? 'climbing' : ''}`}
                 style={{ bottom: MARIO_BASE_BOTTOM + currentRung * RUNG_HEIGHT }}
               >
-                <img src="/Ashu.jpg" alt="Mario" className="mario-avatar" />
+                <img src={ASHU_PHOTO_SRC} alt="Mario" className="mario-avatar" />
               </div>
             </div>
           </div>
