@@ -1,5 +1,6 @@
 import { Component, createRef, type KeyboardEvent } from 'react'
 import { WORDS, WORD_LOOKUP, type Word } from '../data/wordCards'
+import { BASE_URL } from '../utils/baseUrl'
 
 const LADDER_RUNGS = 8
 const RUNG_HEIGHT = 38
@@ -9,7 +10,7 @@ const HEART_CAP = 6
 const POINTS_PER_WORD = 10
 const LEVEL_BONUS = 20
 const RUNG_STEPS = Array.from({ length: LADDER_RUNGS }, (_, i) => i)
-const ASHU_PHOTO_SRC = `${import.meta.env.BASE_URL}Ashu.jpg`
+const ASHU_PHOTO_SRC = `${BASE_URL}Ashu.jpg`
 
 type AudioContextRef = { current: AudioContext | null }
 type OscillatorShape = OscillatorType | 'sine'
@@ -199,7 +200,7 @@ export class LadderGame extends Component<Record<string, never>, LadderGameState
         const updatedState: Partial<LadderGameState> = {
           currentRung: nextRung,
           score: prev.score + POINTS_PER_WORD + (reachedTop ? LEVEL_BONUS : 0),
-          feedback: reachedTop ? '🏆 Mario reached the top!' : '🎉 Great job! Mario climbs up!',
+          feedback: reachedTop ? '🏆 Abhimanyu reached the top!' : '🎉 Great job! Abhimanyu climbs up!',
           winState: reachedTop ? true : prev.winState,
         }
         if (heartUpdates) Object.assign(updatedState, heartUpdates)
@@ -402,7 +403,7 @@ export class LadderGame extends Component<Record<string, never>, LadderGameState
         {winState && (
           <div className="win-message show">
             <p className="trophy">🏆</p>
-            <p className="feedback correct">Mario reached the top! You're a typing champion! 🌟</p>
+            <p className="feedback correct">Abhimanyu reached the top! You're a typing champion! 🌟</p>
             <p className="feedback win-score">Level {level} complete! +{LEVEL_BONUS} coins</p>
             <button className="btn" type="button" onClick={() => this.restart(true)}>
               Next Level 🚀

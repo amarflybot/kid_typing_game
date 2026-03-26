@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { LadderGame } from './components/LadderGame'
 import { CarDash } from './components/CarDash'
+import { LearningLab } from './components/LearningLab'
 import './App.css'
 
-type TabId = 'ladder' | 'car'
+type TabId = 'ladder' | 'car' | 'lab'
 type Tab = { id: TabId; label: string }
 
 const tabs: Tab[] = [
   { id: 'ladder', label: 'Ladder Mode' },
   { id: 'car', label: 'Car Dash' },
+  { id: 'lab', label: 'Learning Lab' },
 ]
 
 function App() {
@@ -22,8 +24,10 @@ function App() {
         <span className="sparkle">🌟</span>
       </div>
       <div className="main-card">
-        <h1>🦸 Mario Typing Adventure</h1>
-        <p className="instructions">Type the word below to make Mario climb the ladder or speed down the track! ✨</p>
+        <h1>🦸 Abhimanyu Typing Adventure</h1>
+        <p className="instructions">
+          Type to make Abhimanyu climb, zoom the race car, or explore playful shape and counting quests! ✨
+        </p>
 
         <div className="tab-bar">
           {tabs.map((tab) => (
@@ -38,7 +42,9 @@ function App() {
           ))}
         </div>
 
-        {activeTab === 'ladder' ? <LadderGame /> : <CarDash />}
+        {activeTab === 'ladder' && <LadderGame />}
+        {activeTab === 'car' && <CarDash />}
+        {activeTab === 'lab' && <LearningLab />}
       </div>
     </div>
   )

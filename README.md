@@ -1,4 +1,4 @@
-# Mario Typing Adventure
+# Abhimanyu Typing Adventure
 
 A kid-friendly typing game built with React 19 + Vite + TypeScript. Players can practice three-letter words in two fun modes:
 

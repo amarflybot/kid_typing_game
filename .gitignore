@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 /.venv/
 /.npm-cache/
+/.oca/custom_code_review_guidelines.txt

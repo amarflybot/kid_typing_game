@@ -1,11 +1,8 @@
 import { Component, createRef, type KeyboardEvent } from 'react'
 import { CAR_WORDS, CAR_LOOKUP, type CarWord, type CarWordCard } from '../data/carWordCards'
+import { BASE_URL } from '../utils/baseUrl'
 
 const CAR_STEPS = 6
-// Normalize BASE_URL for builds where ImportMeta typing omits env
-const BASE_URL =
-  (import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/'
-
 const ABHI_PHOTO_SRC = `${BASE_URL}Abhi.jpg`
 
 type AudioContextRef = { current: AudioContext | null }

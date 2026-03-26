@@ -6,7 +6,7 @@ export type CarWordCard = {
 }
 
 export const CAR_WORD_CARDS = [
-  { word: 'car', emoji: '🏎️', mission: 'Hit the gas for the race car!', colors: ['#f5576c', '#f093fb'] },
+  { word: 'car', emoji: '🏎️', mission: 'Hit the gas for the race car!', colors: ['#f5576c', 'rgb(232,180,237)'] },
   { word: 'bus', emoji: '🚌', mission: 'Pick up friends on the bus!', colors: ['#fbd786', '#f7797d'] },
   { word: 'van', emoji: '🚐', mission: 'Pack the adventure van!', colors: ['#84fab0', '#8fd3f4'] },
   { word: 'cab', emoji: '🚕', mission: 'Call the speedy cab!', colors: ['#f6d365', '#fda085'] },
