@@ -3,7 +3,7 @@ import { WORDS, WORD_LOOKUP, type Word } from '../data/wordCards'
 
 const LADDER_RUNGS = 8
 const RUNG_HEIGHT = 38
-const MARIO_BASE_BOTTOM = 45
+const MARIO_BASE_BOTTOM = 0
 const BASE_LIVES = 3
 const HEART_CAP = 6
 const POINTS_PER_WORD = 10
