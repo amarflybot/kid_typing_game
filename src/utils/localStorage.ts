@@ -1,6 +1,7 @@
 export const STORAGE_KEYS = {
   activeTab: 'kid-game:active-tab',
   carScore: 'kid-game:car-score',
+  hindiScore: 'kid-game:hindi-score',
   labScore: 'kid-game:lab-score',
   ladderScore: 'kid-game:ladder-score',
   mathScore: 'kid-game:math-score',

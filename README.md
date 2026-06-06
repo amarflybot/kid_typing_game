@@ -1,6 +1,6 @@
 # Abhimanyu Typing Adventure
 
-A kid-friendly learning app built with React 19, Vite, and TypeScript. It combines typing practice, word-building, racing, and Upper KG math activities in one browser-based experience.
+A kid-friendly learning app built with React 19, Vite, and TypeScript. It combines typing practice, word-building, racing, Upper KG math, and Hindi letter activities in one browser-based experience.
 
 ## Features
 
@@ -9,6 +9,7 @@ A kid-friendly learning app built with React 19, Vite, and TypeScript. It combin
 - **Learning Lab:** build words from letter tiles, undo mistakes, shuffle tiles, skip to a new word, and match word cards from clues.
 - **Math Quest:** practice Upper KG math with a randomized 50-question session drawn from a larger question bank.
 - **Math Question Types:** counting, addition, subtraction, bigger-number comparison, missing numbers, ten frames, patterns, shape recognition, measurement comparison, and position/order questions.
+- **Hindi Practice:** match Hindi letters, sounds, words, and pictures with tap-friendly choices and auto-advance after each answer.
 - **Persistent Progress:** scores and counters are saved in `localStorage`, so browser refreshes do not clear progress.
 - **Reset Progress:** the main app header includes a reset button to clear saved progress across the whole app.
 - **Kid-Focused UI:** includes Abhimanyu’s photo, colorful cards, large tap targets, feedback messages, animations, and simple audio cues.
@@ -45,6 +46,7 @@ The app stores progress in browser `localStorage` under the `kid-game:*` keys. S
 - car lap, boost, and fans
 - learning lab stars
 - math stars, streak, and answered count
+- Hindi stars, streak, and answered count
 
 Use **Reset Progress** in the app header to clear all saved progress.
 

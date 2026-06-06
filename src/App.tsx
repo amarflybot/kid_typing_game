@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { LadderGame } from './components/LadderGame'
 import { CarDash } from './components/CarDash'
+import { HindiPractice } from './components/HindiPractice'
 import { LearningLab } from './components/LearningLab'
 import { MathQuest } from './components/MathQuest'
 import { BASE_URL } from './utils/baseUrl'
 import { STORAGE_KEYS, clearStoredValues, readStoredValue, writeStoredValue } from './utils/localStorage'
 import './App.css'
 
-type TabId = 'ladder' | 'car' | 'lab' | 'math'
+type TabId = 'ladder' | 'car' | 'lab' | 'math' | 'hindi'
 type Tab = { id: TabId; label: string; detail: string; icon: string }
 const ABHI_PHOTO_SRC = `${BASE_URL}Abhi.jpg`
 
@@ -16,6 +17,7 @@ const tabs: Tab[] = [
   { id: 'car', label: 'Race', detail: 'Speed rounds', icon: '🏎️' },
   { id: 'lab', label: 'Words', detail: 'Build tiles', icon: '🔤' },
   { id: 'math', label: 'Math', detail: 'Upper KG', icon: '🔢' },
+  { id: 'hindi', label: 'Hindi', detail: 'Akshar', icon: 'अ' },
 ]
 
 const getStoredTab = (): TabId => {
@@ -86,6 +88,7 @@ const App = () => {
           {activeTab === 'car' && <CarDash />}
           {activeTab === 'lab' && <LearningLab />}
           {activeTab === 'math' && <MathQuest />}
+          {activeTab === 'hindi' && <HindiPractice />}
         </section>
       </div>
     </div>

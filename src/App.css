@@ -164,7 +164,7 @@ h1 {
 
 .tab-bar {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 16px;
 }
@@ -243,6 +243,7 @@ h1 {
 .ladder-wrapper,
 .learning-lab,
 .math-quest,
+.hindi-practice,
 .car-panel {
   display: flex;
   flex-direction: column;
@@ -349,6 +350,7 @@ h1 {
 .car-word-card,
 .lab-card,
 .math-card,
+.hindi-card,
 .win-message,
 .car-win {
   border: 1px solid var(--line);
@@ -477,6 +479,7 @@ h1 {
 .pit-btn:hover,
 .mini-btn:hover,
 .math-answer:hover:not(:disabled),
+.hindi-option:hover:not(:disabled),
 .tile-button:not(.used):hover,
 .match-option:hover:not(:disabled),
 .option-button:hover,
@@ -487,7 +490,8 @@ h1 {
 .btn:disabled,
 .mini-btn:disabled,
 .tile-button:disabled,
-.match-option:disabled {
+.match-option:disabled,
+.hindi-option:disabled {
   opacity: 0.55;
   cursor: not-allowed;
   transform: none;
@@ -498,7 +502,8 @@ h1 {
 .lab-feedback,
 .car-feedback,
 .feedback,
-.math-feedback {
+.math-feedback,
+.hindi-feedback {
   margin: 0;
   color: var(--muted);
   font-weight: 800;
@@ -509,17 +514,20 @@ h1 {
 .pit-text,
 .car-feedback,
 .feedback,
-.math-feedback {
+.math-feedback,
+.hindi-feedback {
   text-align: center;
 }
 
 .feedback.correct,
-.math-feedback.correct {
+.math-feedback.correct,
+.hindi-feedback.correct {
   color: var(--green-dark);
 }
 
 .feedback.wrong,
-.math-feedback.wrong {
+.math-feedback.wrong,
+.hindi-feedback.wrong {
   color: #bd4c3f;
 }
 
@@ -1282,6 +1290,117 @@ h1 {
   cursor: default;
 }
 
+.hindi-card {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hindi-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hindi-badge {
+  width: 62px;
+  height: 62px;
+  border: 1px solid #d8c9ef;
+  border-radius: var(--radius-card);
+  display: grid;
+  place-items: center;
+  background: #f4f0ff;
+  color: var(--violet);
+  font-weight: 900;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.hindi-card h2 {
+  margin: 0 0 4px;
+  color: var(--ink);
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.hindi-stage {
+  min-height: 220px;
+  border: 1px solid rgba(216, 226, 220, 0.78);
+  border-radius: var(--radius-card);
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  background:
+    linear-gradient(135deg, rgba(244, 240, 255, 0.92), rgba(232, 247, 252, 0.92)),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.46) 28px 30px);
+  box-shadow: inset 0 0 0 5px rgba(255, 255, 255, 0.22);
+  text-align: center;
+}
+
+.hindi-display {
+  max-width: 100%;
+  color: var(--ink);
+  font-family: 'Nunito', 'Comic Sans MS', system-ui, sans-serif;
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.hindi-helper {
+  max-width: 100%;
+  border: 1px solid rgba(216, 226, 220, 0.78);
+  border-radius: var(--radius-control);
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--muted);
+  font-weight: 900;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.hindi-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(84px, 1fr));
+  gap: 10px;
+}
+
+.hindi-option {
+  min-height: 72px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  padding: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: 'Nunito', 'Comic Sans MS', system-ui, sans-serif;
+  font-size: 1.65rem;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: 0;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(36, 50, 56, 0.06);
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.hindi-option.correct {
+  border-color: rgba(47, 143, 104, 0.48);
+  background: #e5f6ec;
+  color: var(--green-dark);
+}
+
+.hindi-option.wrong {
+  border-color: rgba(223, 111, 93, 0.48);
+  background: #fff0eb;
+  color: #a94436;
+}
+
 @keyframes speedDrift {
   from {
     background-position: 0 0;
@@ -1407,8 +1526,22 @@ h1 {
     padding: 14px;
   }
 
+  .hindi-stage {
+    min-height: 190px;
+    padding: 14px;
+  }
+
+  .hindi-display {
+    font-size: 3.1rem;
+  }
+
   .math-answer {
     min-height: 62px;
+  }
+
+  .hindi-option {
+    min-height: 62px;
+    font-size: 1.35rem;
   }
 }
 
@@ -1418,7 +1551,8 @@ h1 {
   .car-photo-card,
   .car-word-card,
   .lab-card-header,
-  .math-problem-header {
+  .math-problem-header,
+  .hindi-card-header {
     align-items: center;
     flex-direction: column;
     text-align: center;
@@ -1427,7 +1561,8 @@ h1 {
   .tab-bar,
   .status-bar,
   .car-status-bar,
-  .math-answer-grid {
+  .math-answer-grid,
+  .hindi-options {
     grid-template-columns: 1fr;
   }
 
