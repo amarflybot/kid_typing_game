@@ -2,15 +2,17 @@ import { useState } from 'react'
 import { LadderGame } from './components/LadderGame'
 import { CarDash } from './components/CarDash'
 import { LearningLab } from './components/LearningLab'
+import { MathQuest } from './components/MathQuest'
 import './App.css'
 
-type TabId = 'ladder' | 'car' | 'lab'
+type TabId = 'ladder' | 'car' | 'lab' | 'math'
 type Tab = { id: TabId; label: string }
 
 const tabs: Tab[] = [
   { id: 'ladder', label: 'Ladder Mode' },
   { id: 'car', label: 'Car Dash' },
   { id: 'lab', label: 'Learning Lab' },
+  { id: 'math', label: 'Math Quest' },
 ]
 
 const App = () => {
@@ -45,6 +47,7 @@ const App = () => {
         {activeTab === 'ladder' && <LadderGame />}
         {activeTab === 'car' && <CarDash />}
         {activeTab === 'lab' && <LearningLab />}
+        {activeTab === 'math' && <MathQuest />}
       </div>
     </div>
   )
