@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { act } from 'react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { MathQuest } from '../MathQuest'
 
 describe('MathQuest', () => {
@@ -8,6 +8,15 @@ describe('MathQuest', () => {
     const chip = screen.getByText(label).parentElement as HTMLElement
     return chip.querySelector('.status-value')?.textContent ?? ''
   }
+
+  beforeEach(() => {
+    window.localStorage.clear()
+    vi.spyOn(Math, 'random').mockReturnValue(0)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
 
   it('counts tapped objects for hands-on number practice', () => {
     render(<MathQuest />)
@@ -70,9 +79,18 @@ describe('MathQuest', () => {
 
       expect(screen.getByText('Snack Basket')).toBeInTheDocument()
       expect(screen.getByText('Tap Count: 0')).toBeInTheDocument()
-      expect(getChipValue('Challenge')).toBe('2 / 178')
+      expect(getChipValue('Challenge')).toBe('2 / 50')
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it('restores saved math scores from local storage', () => {
+    window.localStorage.setItem('kid-game:math-score', JSON.stringify({ stars: 7, streak: 3, answers: 12 }))
+
+    render(<MathQuest />)
+
+    expect(getChipValue('Math Stars')).toBe('7')
+    expect(getChipValue('Streak')).toBe('3')
   })
 })

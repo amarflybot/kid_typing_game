@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { CAR_WORDS, CAR_LOOKUP, type CarWord, type CarWordCard } from '../data/carWordCards'
 import { BASE_URL } from '../utils/baseUrl'
+import { STORAGE_KEYS, readStoredValue, writeStoredValue } from '../utils/localStorage'
 
 const CAR_STEPS = 6
 const ABHI_PHOTO_SRC = `${BASE_URL}Abhi.jpg`
@@ -19,6 +20,12 @@ type CarDashState = {
   feedback: string
   pitMessage: string
   raceWon: boolean
+}
+
+type CarStoredScore = {
+  lap: number
+  boosts: number
+  fans: number
 }
 
 const playTone = (ctxRef: AudioContextRef, freq: number, duration = 0.1) => {
@@ -64,15 +71,20 @@ const createCarPicker = () => {
   }
 }
 
-const createInitialState = (): CarDashState => ({
-  currentWord: CAR_WORDS[0] ?? FALLBACK_CAR_WORD,
-  lap: 0,
-  boosts: 0,
-  fans: 0,
-  feedback: '',
-  pitMessage: 'Tap a pit button to pump up the race!',
-  raceWon: false,
-})
+const DEFAULT_CAR_SCORE: CarStoredScore = { lap: 0, boosts: 0, fans: 0 }
+
+const createInitialState = (storedScore: CarStoredScore = DEFAULT_CAR_SCORE): CarDashState => {
+  const lap = Number.isFinite(storedScore.lap) ? Math.min(CAR_STEPS, Math.max(0, storedScore.lap)) : 0
+  return {
+    currentWord: CAR_WORDS[0] ?? FALLBACK_CAR_WORD,
+    lap,
+    boosts: Number.isFinite(storedScore.boosts) ? Math.min(9, Math.max(0, storedScore.boosts)) : 0,
+    fans: Number.isFinite(storedScore.fans) ? Math.min(99, Math.max(0, storedScore.fans)) : 0,
+    feedback: '',
+    pitMessage: 'Tap a pit button to pump up the race!',
+    raceWon: lap >= CAR_STEPS,
+  }
+}
 
 const getCarPosition = (lap: number) => {
   const progress = Math.min(lap, CAR_STEPS) / CAR_STEPS
@@ -82,11 +94,12 @@ const getCarPosition = (lap: number) => {
 }
 
 export const CarDash = () => {
-  const [state, setState] = useState<CarDashState>(() => createInitialState())
+  const [state, setState] = useState<CarDashState>(() => createInitialState(readStoredValue(STORAGE_KEYS.carScore, DEFAULT_CAR_SCORE)))
   const wordInputRef = useRef<HTMLInputElement>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
   const pickNextWordRef = useRef(createCarPicker())
   const nextWordTimeoutRef = useRef<number | null>(null)
+  const scorePersistenceReadyRef = useRef(false)
 
   const focusInput = useCallback(() => {
     void window.requestAnimationFrame(() => wordInputRef.current?.focus())
@@ -123,6 +136,14 @@ export const CarDash = () => {
       clearNextWordTimeout()
     }
   }, [setNewWord, clearNextWordTimeout])
+
+  useEffect(() => {
+    if (!scorePersistenceReadyRef.current) {
+      scorePersistenceReadyRef.current = true
+      return
+    }
+    writeStoredValue(STORAGE_KEYS.carScore, { lap: Math.min(state.lap, CAR_STEPS), boosts: state.boosts, fans: state.fans })
+  }, [state.boosts, state.fans, state.lap])
 
   const handleBoost = useCallback(() => {
     setState((prev) => ({
@@ -204,7 +225,7 @@ export const CarDash = () => {
 
   const restartRace = useCallback(() => {
     setState((prev) => ({
-      ...createInitialState(),
+      ...createInitialState(DEFAULT_CAR_SCORE),
       currentWord: prev.currentWord,
     }))
     clearNextWordTimeout()

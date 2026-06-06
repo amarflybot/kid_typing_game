@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LadderGame } from './components/LadderGame'
 import { CarDash } from './components/CarDash'
 import { LearningLab } from './components/LearningLab'
 import { MathQuest } from './components/MathQuest'
 import { BASE_URL } from './utils/baseUrl'
+import { STORAGE_KEYS, clearStoredValues, readStoredValue, writeStoredValue } from './utils/localStorage'
 import './App.css'
 
 type TabId = 'ladder' | 'car' | 'lab' | 'math'
@@ -17,8 +18,24 @@ const tabs: Tab[] = [
   { id: 'math', label: 'Math', detail: 'Upper KG', icon: '🔢' },
 ]
 
+const getStoredTab = (): TabId => {
+  const storedTab = readStoredValue<TabId>(STORAGE_KEYS.activeTab, 'ladder')
+  return tabs.some((tab) => tab.id === storedTab) ? storedTab : 'ladder'
+}
+
 const App = () => {
-  const [activeTab, setActiveTab] = useState<TabId>('ladder')
+  const [activeTab, setActiveTab] = useState<TabId>(() => getStoredTab())
+  const [resetVersion, setResetVersion] = useState(0)
+
+  useEffect(() => {
+    writeStoredValue(STORAGE_KEYS.activeTab, activeTab)
+  }, [activeTab])
+
+  const resetProgress = () => {
+    clearStoredValues()
+    setActiveTab('ladder')
+    setResetVersion((current) => current + 1)
+  }
 
   return (
     <div className="app-shell">
@@ -39,6 +56,9 @@ const App = () => {
               <p className="instructions">A focused practice space for words, numbers, and confident little wins.</p>
             </div>
           </div>
+          <button className="reset-progress-btn" type="button" onClick={resetProgress}>
+            Reset Progress
+          </button>
         </header>
 
         <nav className="tab-bar" aria-label="Practice modes">
@@ -61,7 +81,7 @@ const App = () => {
           ))}
         </nav>
 
-        <section className="mode-panel">
+        <section className="mode-panel" key={`${activeTab}-${resetVersion}`}>
           {activeTab === 'ladder' && <LadderGame />}
           {activeTab === 'car' && <CarDash />}
           {activeTab === 'lab' && <LearningLab />}

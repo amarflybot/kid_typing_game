@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { WORDS, WORD_LOOKUP, type Word } from '../data/wordCards'
 import { BASE_URL } from '../utils/baseUrl'
+import { STORAGE_KEYS, readStoredValue, writeStoredValue } from '../utils/localStorage'
 
 const LADDER_RUNGS = 8
 const RUNG_HEIGHT = 38
@@ -26,6 +27,11 @@ type LadderGameState = {
   winState: boolean
   mission: string
   progressColor: string
+}
+
+type LadderStoredScore = {
+  score: number
+  level: number
 }
 
 const playTone = (ctxRef: AudioContextRef, freq: number, duration = 0.1, type: OscillatorShape = 'sine') => {
@@ -89,18 +95,24 @@ const createWordPicker = () => {
   }
 }
 
-const createInitialState = (): LadderGameState => ({
-  currentWord: WORDS[0] ?? FALLBACK_WORD,
-  currentRung: 0,
-  score: 0,
-  level: 1,
-  maxLives: BASE_LIVES,
-  lives: BASE_LIVES,
-  feedback: '',
-  winState: false,
-  mission: 'Get ready to type!',
-  progressColor: '#6c757d',
-})
+const DEFAULT_LADDER_SCORE: LadderStoredScore = { score: 0, level: 1 }
+
+const createInitialState = (storedScore: LadderStoredScore = DEFAULT_LADDER_SCORE): LadderGameState => {
+  const score = Number.isFinite(storedScore.score) ? Math.max(0, storedScore.score) : 0
+  const level = Number.isFinite(storedScore.level) ? Math.max(1, storedScore.level) : 1
+  return {
+    currentWord: WORDS[0] ?? FALLBACK_WORD,
+    currentRung: 0,
+    score,
+    level,
+    maxLives: BASE_LIVES,
+    lives: BASE_LIVES,
+    feedback: '',
+    winState: false,
+    mission: 'Get ready to type!',
+    progressColor: '#6c757d',
+  }
+}
 
 const getHeartUpdates = (prev: LadderGameState, nextRung: number): Partial<LadderGameState> | null => {
   const targetMax = Math.min(HEART_CAP, BASE_LIVES + Math.floor(nextRung / 2))
@@ -115,13 +127,14 @@ const getHeartUpdates = (prev: LadderGameState, nextRung: number): Partial<Ladde
 }
 
 export const LadderGame = () => {
-  const [state, setState] = useState<LadderGameState>(() => createInitialState())
+  const [state, setState] = useState<LadderGameState>(() => createInitialState(readStoredValue(STORAGE_KEYS.ladderScore, DEFAULT_LADDER_SCORE)))
   const wordInputRef = useRef<HTMLInputElement>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
   const pickWordRef = useRef(createWordPicker())
   const nextWordTimeoutRef = useRef<number | null>(null)
   const refillTimeoutRef = useRef<number | null>(null)
   const progressColorTimeoutRef = useRef<number | null>(null)
+  const scorePersistenceReadyRef = useRef(false)
 
   const focusInput = useCallback(() => {
     void window.requestAnimationFrame(() => wordInputRef.current?.focus())
@@ -180,6 +193,14 @@ export const LadderGame = () => {
       clearTimers()
     }
   }, [setNewWord, clearTimers])
+
+  useEffect(() => {
+    if (!scorePersistenceReadyRef.current) {
+      scorePersistenceReadyRef.current = true
+      return
+    }
+    writeStoredValue(STORAGE_KEYS.ladderScore, { score: state.score, level: state.level })
+  }, [state.level, state.score])
 
   const triggerWinCelebration = useCallback(() => {
     playTone(audioCtxRef, 1046.5, 0.25)
@@ -259,14 +280,15 @@ export const LadderGame = () => {
   const restart = useCallback(
     (nextLevel = false) => {
       clearTimers()
+      const storedScore = nextLevel ? { score: state.score, level: state.level + 1 } : DEFAULT_LADDER_SCORE
       setState((prev) => ({
-        ...createInitialState(),
+        ...createInitialState(storedScore),
         level: nextLevel ? prev.level + 1 : 1,
         score: nextLevel ? prev.score : 0,
       }))
       setNewWord()
     },
-    [clearTimers, setNewWord],
+    [clearTimers, setNewWord, state.level, state.score],
   )
 
   const handleKeyDown = useCallback(

@@ -76,6 +76,10 @@ input:focus-visible {
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   background: linear-gradient(135deg, #ffffff 0%, #f4faf7 58%, #fff5df 100%);
 }
 
@@ -134,6 +138,28 @@ h1 {
   color: var(--muted);
   font-weight: 700;
   line-height: 1.45;
+}
+
+.reset-progress-btn {
+  min-width: 138px;
+  border: 1px solid rgba(223, 111, 93, 0.3);
+  border-radius: var(--radius-control);
+  padding: 10px 14px;
+  background: #fff0eb;
+  color: #a94436;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(223, 111, 93, 0.1);
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.reset-progress-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(223, 111, 93, 0.52);
+  box-shadow: 0 10px 20px rgba(223, 111, 93, 0.14);
 }
 
 .tab-bar {
@@ -1098,6 +1124,122 @@ h1 {
   color: var(--coral);
 }
 
+.math-pattern,
+.shape-board,
+.position-line {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(66px, 1fr));
+  gap: 10px;
+}
+
+.math-pattern-tile,
+.shape-tile,
+.position-item,
+.ten-frame-cell {
+  border: 1px solid rgba(216, 226, 220, 0.75);
+  border-radius: var(--radius-card);
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-sm);
+}
+
+.math-pattern-tile {
+  min-height: 70px;
+  color: var(--ink);
+  font-size: 2.2rem;
+}
+
+.math-pattern-tile.missing {
+  border: 3px dashed var(--coral);
+  color: var(--coral);
+  font-family: 'Fredoka One', cursive;
+}
+
+.ten-frame {
+  width: min(100%, 420px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(46px, 1fr));
+  gap: 8px;
+}
+
+.ten-frame-cell {
+  min-height: 58px;
+  color: var(--green-dark);
+  font-size: 1.45rem;
+  cursor: pointer;
+}
+
+.ten-frame-cell.filled {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.shape-tile {
+  min-height: 112px;
+  padding: 12px;
+}
+
+.shape-display {
+  color: var(--violet);
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.shape-label,
+.measure-label {
+  color: var(--muted);
+  font-weight: 900;
+  text-transform: capitalize;
+}
+
+.measure-board {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.measure-row {
+  display: grid;
+  grid-template-columns: 42px minmax(90px, 1fr) 96px;
+  align-items: center;
+  gap: 10px;
+}
+
+.measure-icon {
+  font-size: 1.8rem;
+}
+
+.measure-bar {
+  height: 20px;
+  min-width: 42px;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--green), var(--amber));
+  box-shadow: var(--shadow-sm);
+}
+
+.position-item {
+  min-height: 94px;
+  padding: 8px;
+  gap: 4px;
+}
+
+.position-ordinal {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff4df;
+  color: #7b5212;
+  font-weight: 900;
+}
+
+.position-display {
+  font-size: 2.3rem;
+}
+
 .math-prompt,
 .math-tap-count {
   margin: 0;
@@ -1138,15 +1280,6 @@ h1 {
 
 .math-answer:disabled {
   cursor: default;
-}
-
-.math-actions {
-  display: flex;
-  justify-content: center;
-}
-
-.math-next {
-  min-width: 176px;
 }
 
 @keyframes speedDrift {
@@ -1221,6 +1354,15 @@ h1 {
   .app-header,
   .mode-panel {
     padding: 14px;
+  }
+
+  .app-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reset-progress-btn {
+    width: 100%;
   }
 
   .hero-title {

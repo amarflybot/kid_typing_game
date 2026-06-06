@@ -11,6 +11,7 @@ describe('LadderGame', () => {
   }
 
   beforeEach(() => {
+    window.localStorage.clear()
     vi.spyOn(Math, 'random').mockReturnValue(0)
   })
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { WORD_CARDS, type WordCard } from '../data/wordCards'
 import { BASE_URL } from '../utils/baseUrl'
+import { STORAGE_KEYS, readStoredValue, writeStoredValue } from '../utils/localStorage'
 
 type BuilderChallenge = {
   card: WordCard
@@ -27,6 +28,21 @@ const MATCH_WINS = ['Card match magic! ✨', 'Word detective! 🔍', 'Brilliant 
 const TRY_AGAIN_MESSAGE = 'Almost! Switch letters and try again.'
 const MATCH_TRY_AGAIN = 'Peek at the clue again and tap another card.'
 const ABHI_PHOTO_SRC = `${BASE_URL}Abhi.jpg`
+
+type LabStoredScore = {
+  builderStars: number
+  matchStars: number
+}
+
+const DEFAULT_LAB_SCORE: LabStoredScore = { builderStars: 0, matchStars: 0 }
+
+const getStoredStars = () => {
+  const stored = readStoredValue(STORAGE_KEYS.labScore, DEFAULT_LAB_SCORE)
+  return {
+    builderStars: Number.isFinite(stored.builderStars) ? Math.max(0, stored.builderStars) : 0,
+    matchStars: Number.isFinite(stored.matchStars) ? Math.max(0, stored.matchStars) : 0,
+  }
+}
 
 const shuffle = <T,>(items: readonly T[]): T[] => {
   const next = [...items]
@@ -68,16 +84,17 @@ const createMatchChallenge = (): MatchChallenge => {
 
 export function LearningLab() {
   const [builderState, setBuilderState] = useState<BuilderState>(() => createBuilderState())
-  const [builderStars, setBuilderStars] = useState(0)
+  const [builderStars, setBuilderStars] = useState(() => getStoredStars().builderStars)
   const [builderMessage, setBuilderMessage] = useState(DEFAULT_BUILDER_MESSAGE)
   const [builderLocked, setBuilderLocked] = useState(false)
 
   const [matchChallenge, setMatchChallenge] = useState<MatchChallenge>(() => createMatchChallenge())
-  const [matchStars, setMatchStars] = useState(0)
+  const [matchStars, setMatchStars] = useState(() => getStoredStars().matchStars)
   const [matchMessage, setMatchMessage] = useState(DEFAULT_MATCH_MESSAGE)
   const [matchLocked, setMatchLocked] = useState(false)
 
   const timeoutsRef = useRef<number[]>([])
+  const scorePersistenceReadyRef = useRef(false)
 
   const queue = useCallback((cb: () => void, delay = 1100) => {
     const id = window.setTimeout(() => {
@@ -93,6 +110,14 @@ export function LearningLab() {
       timeoutsRef.current = []
     }
   }, [])
+
+  useEffect(() => {
+    if (!scorePersistenceReadyRef.current) {
+      scorePersistenceReadyRef.current = true
+      return
+    }
+    writeStoredValue(STORAGE_KEYS.labScore, { builderStars, matchStars })
+  }, [builderStars, matchStars])
 
   const resetBuilder = useCallback(() => {
     setBuilderState(createBuilderState())
